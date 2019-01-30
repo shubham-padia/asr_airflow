@@ -38,8 +38,25 @@ def resample_task(**kwargs):
     input_file_name = file_metadata['filename']
     channels = file_metadata['channels']
     output_dir = '0_raw'
-    output_prefix = output_dir + '/181204_142512-m' 
+    basename = '181204_142512-m'
+    output_prefix = output_dir + '/' + basename 
     resample(channels, input_file_name, output_prefix)
+
+    return output_dir, basename
+
+def segmentation_task(**kwargs):
+    ti = kwargs['ti']
+    msg = ti.xcom_pull(task_ids='resample_ceiling')
+    resample_dir = os.getcwd() + '/' + msg[0]
+    resample_file_id = msg[1]
+    output_dir = os.getcwd() + '/1_clean/'
+    create_with_parents(output_dir)
+    vad_dir = '/home/shubham/backend_asr/vad8_dnn'
+    vad_script = 'vad_DNN_v4_test2.sh'
+    my_env=os.environ.copy()
+    my_env["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    vad_command = ["bash", vad_script, resample_dir, output_dir, resample_file_id]
+    subprocess.run(vad_command, env=my_env, cwd=vad_dir)
 
 with DAG('test_asr_v01',
         default_args=default_args,
@@ -50,4 +67,9 @@ with DAG('test_asr_v01',
                                         python_callable=resample_task,
                                         provide_context=True)
 
+    t_segmentation = PythonOperator(task_id='segmentation',
+                                    python_callable=segmentation_task,
+                                    provide_context=True)
 
+
+t_resample_ceiling >> t_segmentation
