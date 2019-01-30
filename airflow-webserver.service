@@ -9,6 +9,7 @@ User=shubham
 Group=shubham
 Type=simple
 ExecStart= /home/shubham/.pyenv/versions/3.7.2/envs/shubham_airflow/bin/airflow webserver --pid /home/shubham/github/asr_airflow/webserver.pid
+WorkingDirectory=/home/shubham/github/asr_airflow
 Restart=on-failure
 RestartSec=5s
 PrivateTmp=true
