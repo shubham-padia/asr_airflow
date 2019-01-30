@@ -1,0 +1,13 @@
+{
+	"date": "28-nov-2018",
+	"numsess": 1,
+	"session":[
+		{"ceiling": {
+			"filename": "data/1812014_142512-m.WAV",
+			"channels": [1, 2],
+			"type": "cm",
+			"lang": "sge",
+			"asr_type": "lvscr"}
+		}
+	]
+}   
