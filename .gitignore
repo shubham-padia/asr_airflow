@@ -1,3 +1,5 @@
+metadata/
+1_clean/
 0_raw/
 *.pid
 logs/
