@@ -6,6 +6,7 @@ from shutil import copyfile
 import time
 import yaml
 import os
+import errno
 import subprocess
 from pathlib import Path
 from slugify import slugify
@@ -108,4 +109,4 @@ with DAG('test_asr_v01',
                                   python_callable=move_input_task,
                                   provide_context=True)
 
-t_resample_ceiling >> t_segmentation >> t_move_input
+t_resample_ceiling >> t_segmentation
