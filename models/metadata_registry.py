@@ -9,3 +9,6 @@ class MetadataRegistry(Base):
     filename = Column(String)
     status = Column(Boolean(name='ck_status_bool'))
 
+    def __init__(self, filename, status=False):
+        self.filename = filename
+        self.status = status
