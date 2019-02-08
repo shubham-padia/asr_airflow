@@ -1,3 +1,4 @@
+airflow.env
 moved_input/
 metadata/
 1_clean/
