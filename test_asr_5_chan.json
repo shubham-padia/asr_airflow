@@ -1,0 +1,40 @@
+{
+	"date": "28-nov-2018",
+	"session":[
+		[{
+			"filename": "data/181204_142512-m.WAV",
+			"channels": [1, 2],
+			"type": "cm",
+			"lang": "sge",
+			"asr_type": "lvscr"
+		},
+		{
+			"filename": "data/181204_142459-s.WAV",
+			"channels": [1, 2],
+			"type": "tm",
+			"lang": "sge",
+			"asr_type": "lvscr"
+		}],
+		[{
+			"filename": "data/181204_144601-m.WAV",
+			"channels": [1, 2],
+			"type": "cm",
+			"lang": "sge",
+			"asr_type": "lvscr"
+		},
+		{
+			"filename": "data/181204_144549-s.WAV",
+			"channels": [1, 2],
+			"type": "tm",
+			"lang": "sge",
+			"asr_type": "lvscr"
+		},
+		{
+			"filename": "data/181204_144549-s.WAV",
+			"channels": [6, 7],
+			"type": "ct",
+			"lang": "sge",
+			"asr_type": "lvscr"
+		}]
+	]
+}   
