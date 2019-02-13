@@ -61,8 +61,6 @@ def move_input_task(**kwargs):
             shutil.copyfile(src, dst)
 
 def resample_task(**kwargs):
-    #pprint.pprint(kwargs)
-    # metadata = kwargs['metadata']
     params = kwargs['params']
     i = params['i']
     file_metadata = params['metadata']
@@ -113,15 +111,15 @@ def process_records():
     # We will keep the records of the last 2 days. As soon as the dag becomes
     # older than 2 days, its dag will not be returned and the pipeline cannot
     # be seen again.
-
-    date_threshold = (dt.date.today() - dt.timedelta(30)).isoformat()
+    days_threshold = 30
+    date_threshold = (dt.date.today() - dt.timedelta(days_threshold)).isoformat()
     select_sql = "SELECT id, filename from metadata_registry where created_at > \
     '{}'".format(date_threshold)
 
     pg_hook = PostgresHook(postgres_conn_id='watcher')
     connection = pg_hook.get_conn()
 
-    print("Checking for records in the last two days")
+    print("Checking for records in the last %d days" % days_threshold)
 
     cursor = connection.cursor()
     cursor.execute(select_sql)
@@ -155,7 +153,7 @@ for metadata_id, file_path in metadata_record_list:
     metadata = parse_metadata(file_path)
     
     for idx, session in enumerate(metadata['session']):
-        dag2_id = 'db_pipeline_v11_%s_session_%d' % (metadata_id, idx + 1) 
+        dag2_id = 'db_pipeline_v12_%s_session_%d' % (metadata_id, idx + 1) 
         dag2 = DAG(dag2_id,
                    default_args=default_args,
                    schedule_interval='@once')
