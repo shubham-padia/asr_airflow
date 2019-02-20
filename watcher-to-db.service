@@ -1,0 +1,16 @@
+[Unit]
+Description=Watcher - Log new metadata file to DB.
+
+[Service]
+EnvironmentFile=/home/shubham/github/asr_airflow/.env
+User=shubham
+Group=shubham
+Type=simple
+ExecStart=/home/shubham/.pyenv/versions/3.7.2/envs/shubham_airflow/bin/python watcher_to_db.py
+WorkingDirectory=/home/shubham/github/asr_airflow
+Restart=on-failure
+RestartSec=5s
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
