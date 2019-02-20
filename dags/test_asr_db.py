@@ -43,11 +43,16 @@ def resample(channels, input_file_name, output_prefix):
         result = subprocess.run(resample_command)
 
 def move_input_task(**kwargs):
-    metadata = kwargs['dag_run'].conf.get('metadata')
+    pprint.pprint(kwargs)
+    params = kwargs['params']
+    session_metadata = params['session_metadata']
+    parent_output_dir = params['parent_output_dir']
+
 #    for attr in dir(obj):
 #        print("obj.%s = %r" % (attr, getattr(obj, attr)))
+
     current_dir = os.getcwd()
-    target_dir = current_dir + '/moved_input/' + kwargs['dag']._dag_id
+    target_dir = current_dir + '/moved_input/' + parent_output_dir 
     create_dir_if_not_exists(target_dir)
  
     for session in metadata['session']:
@@ -64,17 +69,21 @@ def resample_task(**kwargs):
     params = kwargs['params']
     i = params['i']
     file_metadata = params['metadata']
+    mic_name = file_metadata['name']
+    session_num = params['session_num']
 
     print(file_metadata)
     input_file_name = file_metadata['filename']
     channels = file_metadata['channels']
-    file_dir = 'output/pipeline_%d/session_%d/%s' % (params['metadata_id'],
-            params['session_num'], 
+    file_dir = 'output/%s/session_%d/%s' % (params['parent_output_dir'],
+            session_num, 
             file_metadata['type'])
     output_dir = file_dir + '/0_raw'
     create_dir_if_not_exists(output_dir)
+    
     basename = os.path.splitext(os.path.basename(input_file_name))[0]
-    output_prefix = output_dir + '/' + basename 
+    output_prefix = '%s/%s-session%d-%s' %(output_dir, basename, session_num,
+            mic_name) 
     resample(channels, input_file_name, output_prefix)
 
     return output_dir, basename, file_dir
@@ -82,16 +91,20 @@ def resample_task(**kwargs):
 def segmentation_task(**kwargs):
     ti = kwargs['ti']
     i = kwargs['params']['i']
-    msg = ti.xcom_pull(task_ids='resample_ceiling_%d' % i)
+    msg = ti.xcom_pull(task_ids='resample_%s' % kwargs['params']['mic_name'])
+    
     resample_dir = os.getcwd() + '/' + msg[0]
     resample_file_id = msg[1] 
     output_dir = os.getcwd() + '/' + msg[2] + '/1_clean'
     create_dir_if_not_exists(output_dir)
+    
     vad_dir = '/home/shubham/backend_asr/vad8_dnn'
     vad_script = 'vad_DNN_v4_test2.sh'
+    
     my_env=os.environ.copy()
     my_env["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    intm_id = '%s%d' % (kwargs['ts_nodash'], i)
+    
+    intm_id = kwargs['ts_nodash'] + str(kwargs['params']['session_num']) + str(i)
     vad_command = ["bash", vad_script, resample_dir, output_dir, intm_id]
     
     print("vad command")
@@ -104,7 +117,7 @@ def segmentation_task(**kwargs):
     print(resample_dir)
     print("output_dir")
     print(output_dir)
-    subprocess.run(vad_command, env=my_env, cwd=vad_dir)
+    subprocess.check_call(vad_command, env=my_env, cwd=vad_dir)
 
 
 def process_records():
@@ -114,7 +127,7 @@ def process_records():
     days_threshold = 30
     date_threshold = (dt.date.today() - dt.timedelta(days_threshold)).isoformat()
     select_sql = "SELECT id, filename from metadata_registry where created_at > \
-    '{}'".format(date_threshold)
+    '{}' AND NOT status".format(date_threshold)
 
     pg_hook = PostgresHook(postgres_conn_id='watcher')
     connection = pg_hook.get_conn()
@@ -151,28 +164,51 @@ metadata_record_list = process_records()
 
 for metadata_id, file_path in metadata_record_list:
     metadata = parse_metadata(file_path)
-    
+    pipeline_name = os.path.splitext(os.path.basename(file_path))[0]
+    parent_output_dir = pipeline_name
+
     for idx, session in enumerate(metadata['session']):
-        dag2_id = 'db_pipeline_v12_%s_session_%d' % (metadata_id, idx + 1) 
+        dag2_id = '%s_session_%d' % (pipeline_name, idx + 1) 
         dag2 = DAG(dag2_id,
                    default_args=default_args,
                    schedule_interval='@once')
 
+        t_move_input_task = PythonOperator(task_id='move_input',
+                                           dag=dag2,
+                                           python_callable=move_input_task,
+                                           params={
+                                               "parent_output_dir":
+                                               parent_output_dir,
+                                               "session_metadata":
+                                               metadata['session'][idx]
+                                           },
+                                           provide_context=True)
+        
         for i in range(1, len(session) + 1):
-            t_resample_ceiling = PythonOperator(task_id='resample_ceiling_%d' % i,
+            mic_metadata = metadata['session'][idx][i-1]
+
+            t_resample_ceiling = PythonOperator(task_id='resample_%s' % mic_metadata['name'], 
                                                 python_callable=resample_task,
                                                 params={
                                                     "i": i,
                                                     "metadata_id": metadata_id,
                                                     "session_num": idx + 1,
-                                                    "metadata":metadata['session'][idx][i-1]
+                                                    "metadata": mic_metadata,
+                                                    "parent_output_dir":
+                                                    parent_output_dir
                                                 },
                                                 dag=dag2,
                                                 provide_context=True)
 
-            t_segmentation = PythonOperator(task_id='segmentation_%d' % i,
+            t_segmentation = PythonOperator(task_id='segmentation_%s' %
+
+                mic_metadata['name'],
                                             params={
                                                 "i": i,
+                                                "mic_name":
+                                                mic_metadata['name'],
+                                                "session_num": idx + 1,
+                                                "pipeline_name": pipeline_name
                                             },
                                             dag=dag2,
                                             python_callable=segmentation_task,
