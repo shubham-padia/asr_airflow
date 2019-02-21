@@ -167,55 +167,56 @@ for metadata_id, file_path in metadata_record_list:
     pipeline_name = os.path.splitext(os.path.basename(file_path))[0]
     parent_output_dir = pipeline_name
 
-    for idx, session in enumerate(metadata['session']):
-        dag2_id = '%s_session_%d' % (pipeline_name, idx + 1) 
-        dag2 = DAG(dag2_id,
-                   default_args=default_args,
-                   schedule_interval='@once')
+    if not metadata.get('hybrids', None):
+        for idx, session in enumerate(metadata['session']):
+            dag2_id = '%s_session_%d' % (pipeline_name, idx + 1) 
+            dag2 = DAG(dag2_id,
+                       default_args=default_args,
+                       schedule_interval='@once')
 
-        t_move_input_task = PythonOperator(task_id='move_input',
-                                           dag=dag2,
-                                           python_callable=move_input_task,
-                                           params={
-                                               "parent_output_dir":
-                                               parent_output_dir,
-                                               "session_metadata":
-                                               metadata['session'][idx]
-                                           },
-                                           provide_context=True)
-        
-        for i in range(1, len(session) + 1):
-            mic_metadata = metadata['session'][idx][i-1]
+            t_move_input_task = PythonOperator(task_id='move_input',
+                                               dag=dag2,
+                                               python_callable=move_input_task,
+                                               params={
+                                                   "parent_output_dir":
+                                                   parent_output_dir,
+                                                   "session_metadata":
+                                                   metadata['session'][idx]
+                                               },
+                                               provide_context=True)
+            
+            for i in range(1, len(session) + 1):
+                mic_metadata = metadata['session'][idx][i-1]
 
-            t_resample_ceiling = PythonOperator(task_id='resample_%s' % mic_metadata['name'], 
-                                                python_callable=resample_task,
+                t_resample_ceiling = PythonOperator(task_id='resample_%s' % mic_metadata['name'], 
+                                                    python_callable=resample_task,
+                                                    params={
+                                                        "i": i,
+                                                        "metadata_id": metadata_id,
+                                                        "session_num": idx + 1,
+                                                        "metadata": mic_metadata,
+                                                        "parent_output_dir":
+                                                        parent_output_dir
+                                                    },
+                                                    dag=dag2,
+                                                    provide_context=True)
+
+                t_segmentation = PythonOperator(task_id='segmentation_%s' %
+
+                    mic_metadata['name'],
                                                 params={
                                                     "i": i,
-                                                    "metadata_id": metadata_id,
+                                                    "mic_name":
+                                                    mic_metadata['name'],
                                                     "session_num": idx + 1,
-                                                    "metadata": mic_metadata,
-                                                    "parent_output_dir":
-                                                    parent_output_dir
+                                                    "pipeline_name": pipeline_name
                                                 },
                                                 dag=dag2,
+                                                python_callable=segmentation_task,
                                                 provide_context=True)
+                
 
-            t_segmentation = PythonOperator(task_id='segmentation_%s' %
+                t_resample_ceiling >> t_segmentation
 
-                mic_metadata['name'],
-                                            params={
-                                                "i": i,
-                                                "mic_name":
-                                                mic_metadata['name'],
-                                                "session_num": idx + 1,
-                                                "pipeline_name": pipeline_name
-                                            },
-                                            dag=dag2,
-                                            python_callable=segmentation_task,
-                                            provide_context=True)
-            
-
-            t_resample_ceiling >> t_segmentation
-
-        globals()[dag2_id] = dag2
+            globals()[dag2_id] = dag2
 
