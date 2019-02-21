@@ -41,5 +41,17 @@
 			"lang": "sge",
 			"asr_type": "lvscr"
 		}]
-	]
+	],
+	"hybrids": {
+		"2": [{
+			"seg": {
+				"mic_name": "ceiling",
+				"channel": 1
+			},
+			"wav": {
+				"mic_name": "table",
+				"channel": 1 
+			}
+		}]
+	}
 }   
