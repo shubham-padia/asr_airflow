@@ -48,6 +48,7 @@ class Watcher:
 class Handler(FileSystemEventHandler):
     @staticmethod
     def on_created(event):
+        print(event)
         file_path = event.src_path
         session = Session()
         metadata_entry = MetadataRegistry(file_path, False)
