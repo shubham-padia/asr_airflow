@@ -15,6 +15,7 @@ from slugify import slugify
 import shutil
 import json
 import pprint
+from helpers import change_segment_id
 
 default_args = {
         'owner': 'me',
@@ -118,7 +119,7 @@ def segmentation_task(**kwargs):
     print(output_dir)
     subprocess.check_call(vad_command, env=my_env, cwd=vad_dir)
 
-    return output_dir, resample_file_id
+    return output_dir, msg[1], resample_file_id
 
 def decoder_task(**kwargs):
     params = kwargs['params']
@@ -129,15 +130,44 @@ def decoder_task(**kwargs):
     seg_data = ti.xcom_pull(task_ids=seg['task_id'])
     wav_data = ti.xcom_pull(task_ids=wav['task_id'])
     
-    output_dir = "%s/%s/session%d/hybrid/" % (os.getcwd(),
+    output_dir = "%s/%s/session%d/hybrid" % (os.getcwd(),
             params['parent_output_dir'], params['session_num']) 
     create_dir_if_not_exists(output_dir)
     
+    output_file_name_prefix = "session%s-seg-%s-%s-wav-%s-%s" % (params['session_num'],
+            seg['mic_name'], seg['channel'], wav['mic_name'], seg['channel'])
+    
+    # The decode bash script requires the segment file name and the wav
+    # file name to be the same. We are using symlinks to make them have the
+    # same file name. They also need to be in the same directory.
+    seg_file = "%s/%s-session%s-%s-%s.seg" % (seg_data[0], seg_data[2],
+            params['session_num'], seg['mic_name'], seg['channel'])
+    wav_file = "%s/%s-session%s-%s-%s.wav" % (wav_data[0],
+            wav_data[2], params['session_num'], wav['mic_name'], wav['channel'])
+    
+    symlink_dir = "%s/input-symlinks" % (output_dir)
+    symlink_prefix = "%s/%s" % (symlink_dir, output_file_name_prefix)
+    symlink_wav_file = "%s.wav" % symlink_prefix
+    symlink_seg_file = "%s.seg" % symlink_prefix
+
+    create_dir_if_not_exists(symlink_dir)
+    os.symlink(wav_file, symlink_wav_file)
+    change_segment_id(seg_file, symlink_seg_file)
+
     print("output_dir: %s" % output_dir)
-    print("seg_file: %s/%s-%s.seg" % (seg_data[0], seg_data[1],
-        seg['channel']))
-    print("wav_file: %s/%s-%s.wav" % (wav_data[0], wav_data[1],
-        wav['channel']))
+    print("%s" % symlink_seg_file)
+    print("%s" % symlink_wav_file)
+    
+    decoder_dir = '/home/shubham/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts'
+    decoder_script = 'decoding_stdl.sh'
+    
+    my_env=os.environ.copy()
+    my_env["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    
+    decoder_command = ['bash', decoder_script,
+            '../systems', symlink_seg_file, symlink_wav_file, output_dir,
+            output_file_name_prefix]
+    subprocess.check_call(decoder_command, env=my_env, cwd=decoder_dir)
 
 def process_records():
     # We will keep the records of the last 2 days. As soon as the dag becomes
@@ -249,12 +279,14 @@ for metadata_id, file_path in metadata_record_list:
             print("session hybrids: %s" % session_hybrids)            
             if session_hybrids:
                 for hybrid in session_hybrids:
-                    seg_mic_name = hybrid['seg']['mic_name']
+                    seg_hybrid = hybrid['seg']
+                    seg_mic_name = seg_hybrid['mic_name']
                     seg_task_id = 'segmentation_%s' % seg_mic_name
                     seg_task = get_task_by_id(seg_task_id, dag2)
                     
-                    wav_mic_name = hybrid['wav']['mic_name']
-                    wav_task_id = 'segmentation_%s' % hybrid['wav']['mic_name']
+                    wav_hybrid = hybrid['wav']
+                    wav_mic_name = wav_hybrid['mic_name']
+                    wav_task_id = 'segmentation_%s' % wav_mic_name
                     wav_task = get_task_by_id(wav_task_id, dag2)
 
                     t_decoder = PythonOperator(task_id='hybrid_seg_%s_wav_%s' % 
@@ -265,11 +297,13 @@ for metadata_id, file_path in metadata_record_list:
                                 "parent_output_dir": parent_output_dir,
                                 "seg": {
                                     "task_id": seg_task_id,
-                                    "channel": 1
+                                    "channel": seg_hybrid['channel'],
+                                    "mic_name": seg_mic_name
                                 },
                                 "wav": {
                                     "task_id": wav_task_id,
-                                    "channel": 2
+                                    "channel": wav_hybrid['channel'],
+                                    "mic_name": wav_mic_name
                                 }
                             },
                             python_callable=decoder_task,
