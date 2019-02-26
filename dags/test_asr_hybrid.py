@@ -130,12 +130,12 @@ def decoder_task(**kwargs):
     seg_data = ti.xcom_pull(task_ids=seg['task_id'])
     wav_data = ti.xcom_pull(task_ids=wav['task_id'])
     
-    output_dir = "%s/%s/session%d/hybrid" % (os.getcwd(),
-            params['parent_output_dir'], params['session_num']) 
+    output_prefix = "session%s-%s-seg-%s-wav-%s" % (params['session_num'],
+            seg['channel'], seg['mic_name'], wav['mic_name'])
+    output_dir = "%s/%s/session%d/hybrid/decoder/%s" % (os.getcwd(),
+            params['parent_output_dir'], params['session_num'], output_prefix) 
     create_dir_if_not_exists(output_dir)
     
-    output_file_name_prefix = "session%s-seg-%s-%s-wav-%s-%s" % (params['session_num'],
-            seg['mic_name'], seg['channel'], wav['mic_name'], seg['channel'])
     
     # The decode bash script requires the segment file name and the wav
     # file name to be the same. We are using symlinks to make them have the
@@ -146,7 +146,7 @@ def decoder_task(**kwargs):
             wav_data[2], params['session_num'], wav['mic_name'], wav['channel'])
     
     symlink_dir = "%s/input-symlinks" % (output_dir)
-    symlink_prefix = "%s/%s" % (symlink_dir, output_file_name_prefix)
+    symlink_prefix = "%s/%s" % (symlink_dir, output_prefix)
     symlink_wav_file = "%s.wav" % symlink_prefix
     symlink_seg_file = "%s.seg" % symlink_prefix
 
@@ -166,7 +166,7 @@ def decoder_task(**kwargs):
     
     decoder_command = ['bash', decoder_script,
             '../systems', symlink_seg_file, symlink_wav_file, output_dir,
-            output_file_name_prefix]
+            output_prefix]
     subprocess.check_call(decoder_command, env=my_env, cwd=decoder_dir)
 
 def process_records():
