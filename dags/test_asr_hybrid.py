@@ -36,8 +36,8 @@ def create_dir_if_not_exists(directory):
             raise
 
 def resample(channels, input_file_name, output_prefix):
-    for channel in channels:
-        output_file_name = output_prefix + '-' + str(channel) + '.wav'
+    for idx, channel in enumerate(channels):
+        output_file_name = output_prefix + '-' + str(idx) + '.wav'
         create_with_parents(output_file_name)
         resample_command = ["sox", input_file_name, "-r16k", "-b16",
         output_file_name, "remix", str(channel)]
@@ -132,7 +132,7 @@ def decoder_task(**kwargs):
     wav_data = ti.xcom_pull(task_ids=wav['task_id'])
     
     output_prefix = "session%s-%s-seg-%s-wav-%s" % (params['session_num'],
-            seg['channel'], seg['mic_name'], wav['mic_name'])
+            seg['speaker_id'], seg['mic_name'], wav['mic_name'])
     output_dir = "%s/%s/session%d/hybrid/decoder/%s" % (os.getcwd(),
             params['parent_output_dir'], params['session_num'], output_prefix) 
     create_dir_if_not_exists(output_dir)
@@ -142,9 +142,10 @@ def decoder_task(**kwargs):
     # file name to be the same. We are using symlinks to make them have the
     # same file name. They also need to be in the same directory.
     seg_file = "%s/%s-session%s-%s-%s.seg" % (seg_data[0], seg_data[2],
-            params['session_num'], seg['mic_name'], seg['channel'])
+            params['session_num'], seg['mic_name'], seg['speaker_id'])
     wav_file = "%s/%s-session%s-%s-%s.wav" % (wav_data[0],
-            wav_data[2], params['session_num'], wav['mic_name'], wav['channel'])
+            wav_data[2], params['session_num'], wav['mic_name'],
+            wav['speaker_id'])
     
     symlink_dir = "%s/input-symlinks" % (output_dir)
     symlink_prefix = "%s/%s" % (symlink_dir, output_prefix)
@@ -301,12 +302,14 @@ for metadata_id, file_path, created_at in metadata_record_list:
                                 "parent_output_dir": parent_output_dir,
                                 "seg": {
                                     "task_id": seg_task_id,
-                                    "channel": seg_hybrid['channel'],
+                                    "speaker_id": seg_hybrid.get('speaker_id',
+                                        seg_hybrid.get('channel')),
                                     "mic_name": seg_mic_name
                                 },
                                 "wav": {
                                     "task_id": wav_task_id,
-                                    "channel": wav_hybrid['channel'],
+                                    "speaker_id": wav_hybrid.get('speaker_id',
+                                        wav_hybrid.get('channel')),
                                     "mic_name": wav_mic_name
                                 }
                             },
