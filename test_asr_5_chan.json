@@ -46,11 +46,11 @@
 		"2": [{
 			"seg": {
 				"mic_name": "ceiling",
-				"channel": 1
+				"speaker_id": 1
 			},
 			"wav": {
-				"mic_name": "table",
-				"channel": 1 
+				"mic_name": "closetalk",
+				"speaker_id": 1 
 			}
 		}]
 	}
