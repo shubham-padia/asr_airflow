@@ -53,7 +53,8 @@ def move_input_task(**kwargs):
 #        print("obj.%s = %r" % (attr, getattr(obj, attr)))
 
     current_dir = os.getcwd()
-    target_dir = current_dir + '/moved_input/' + parent_output_dir 
+    target_dir = "%s/moved_input/%s" % (current_dir, parent_output_dir)
+            
     create_dir_if_not_exists(target_dir)
  
     for idx, mic in enumerate(session):
@@ -71,22 +72,22 @@ def resample_task(**kwargs):
     file_metadata = params['metadata']
     mic_name = file_metadata['name']
     session_num = params['session_num']
+    pipeline_name = params['pipeline_name']
 
     print(file_metadata)
     input_file_name = file_metadata['filename']
     channels = file_metadata['channels']
     file_dir = '%s/session%d/%s' % (params['parent_output_dir'],
-            session_num, 
+            session_num,
             file_metadata['type'])
     output_dir = file_dir + '/0_raw'
     create_dir_if_not_exists(output_dir)
     
-    basename = os.path.splitext(os.path.basename(input_file_name))[0]
-    output_prefix = '%s/%s-session%d-%s' %(output_dir, basename, session_num,
+    output_prefix = '%s/%s-session%d-%s' %(output_dir, pipeline_name, session_num,
             mic_name) 
     resample(channels, input_file_name, output_prefix)
 
-    return output_dir, basename, file_dir
+    return output_dir, pipeline_name,file_dir
 
 def segmentation_task(**kwargs):
     ti = kwargs['ti']
@@ -175,7 +176,7 @@ def process_records():
     # be seen again.
     days_threshold = 30
     date_threshold = (dt.date.today() - dt.timedelta(days_threshold)).isoformat()
-    select_sql = "SELECT id, filename from metadata_registry where created_at > \
+    select_sql = "SELECT id, filename, created_at from metadata_registry where created_at > \
     '{}' AND NOT status".format(date_threshold)
 
     pg_hook = PostgresHook(postgres_conn_id='watcher')
@@ -219,10 +220,11 @@ t_process_records = PythonOperator(task_id='process_records',
 
 metadata_record_list = process_records()
 
-for metadata_id, file_path in metadata_record_list:
+for metadata_id, file_path, created_at in metadata_record_list:
+    created_at_str = created_at.strftime("%Y_%m_%d_%I_%M_%S")
     metadata = parse_metadata(file_path)
     pipeline_name = os.path.splitext(os.path.basename(file_path))[0]
-    parent_output_dir = "output/%s" % pipeline_name
+    parent_output_dir = "output/%s/%s" % (pipeline_name, created_at_str)
 
     if True:
         for idx, session in enumerate(metadata['session']):
@@ -253,7 +255,9 @@ for metadata_id, file_path in metadata_record_list:
                                                         "session_num": idx + 1,
                                                         "metadata": mic_metadata,
                                                         "parent_output_dir":
-                                                        parent_output_dir
+                                                        parent_output_dir,
+                                                        "pipeline_name":
+                                                        pipeline_name
                                                     },
                                                     dag=dag2,
                                                     provide_context=True)
