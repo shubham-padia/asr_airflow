@@ -1,7 +1,9 @@
 import sys
 import os
-from pathlib import Path
 import errno
+import json
+
+from pathlib import Path
 
 def create_dir_if_not_exists(directory):
     try:
@@ -29,3 +31,13 @@ def change_segment_id(segment_file_location, new_file_location):
     with open(new_file_location, 'w+') as new_file:
         for result in results:
             new_file.write(' '.join(result))
+
+def parse_json(metadata_file_path):
+    metadata = None 
+    with open(metadata_file_path, "r") as stream:
+        try:
+            metadata = json.loads(stream.read())
+        except ValueError as exc:
+            print(exc)
+    
+    return metadata

@@ -7,7 +7,7 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.hooks.postgres_hook import PostgresHook
 
-from tasks.helpers import change_segment_id, create_dir_if_not_exists
+from tasks.helpers import change_segment_id, create_dir_if_not_exists, parse_json
 from tasks.resample import get_resample_task
 from tasks.vad import get_vad_task
 from tasks.decoder import get_decoder_task
@@ -47,16 +47,6 @@ def process_records():
 
     return sql_results
 
-def parse_metadata(metadata_file_path):
-    metadata = None 
-    with open(metadata_file_path, "r") as stream:
-        try:
-            metadata = json.loads(stream.read())
-        except ValueError as exc:
-            print(exc)
-    
-    return metadata
-
 def get_task_by_id(task_id, dag):
     for task in dag.tasks:
         if task.task_id == task_id:
@@ -66,8 +56,6 @@ def get_task_by_id(task_id, dag):
 
 def get_dummy_task(session_num, dag):
     return DummyOperator(task_id='dummy_%s' % session_num, dag=dag)
-
-
 
 def get_task_by_type(task_type, inputs, session_num, session_metadata, parent_output_dir,
         pipeline_name, dag):
@@ -98,7 +86,7 @@ metadata_record_list = process_records()
 
 for metadata_id, file_path, created_at in metadata_record_list:
     created_at_str = created_at.strftime("%Y_%m_%d_%I_%M_%S")
-    pipeline_info = parse_metadata(file_path)
+    pipeline_info = parse_json(file_path)
 
     if pipeline_info.get('steps', None):
         metadata = pipeline_info['metadata']
