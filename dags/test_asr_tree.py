@@ -1,20 +1,17 @@
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
-from airflow.operators.dummy_operator import DummyOperator
-from airflow.contrib.sensors.file_sensor import FileSensor
-from airflow.hooks.postgres_hook import PostgresHook
-import datetime as dt
-from shutil import copyfile
-import time
-import yaml
 import os
 import errno
 import subprocess
-from pathlib import Path
-from slugify import slugify
+import datetime as dt
 import shutil
 import json
-import pprint
+
+from shutil import copyfile
+from pathlib import Path
+from airflow import DAG
+from airflow.operators.python_operator import PythonOperator
+from airflow.operators.dummy_operator import DummyOperator
+from airflow.hooks.postgres_hook import PostgresHook
+
 from helpers import change_segment_id
 
 RESAMPLE = 'resample'
