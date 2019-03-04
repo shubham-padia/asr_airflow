@@ -1,6 +1,7 @@
 import sys
 import os
 from pathlib import Path
+import errno
 
 def create_dir_if_not_exists(directory):
     try:

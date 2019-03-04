@@ -12,7 +12,8 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.hooks.postgres_hook import PostgresHook
 
-from helpers import change_segment_id
+from tasks.resample import get_resample_task
+from tasks.helpers import change_segment_id, create_dir_if_not_exists
 
 RESAMPLE = 'resample'
 VAD = 'vad'
@@ -26,27 +27,7 @@ default_args = {
         'retry_delay': dt.timedelta(minutes=5),
 }
 
-def create_with_parents(path_str):
-    path = Path(path_str)
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-def create_dir_if_not_exists(directory):
-    try:
-        os.makedirs(directory)
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
-
-def resample(channels, input_file_name, output_prefix):
-    for idx, channel in enumerate(channels):
-        output_file_name = output_prefix + '-' + str(idx + 1) + '.wav'
-        create_with_parents(output_file_name)
-        resample_command = ["sox", input_file_name, "-r16k", "-b16",
-        output_file_name, "remix", str(channel)]
-        result = subprocess.run(resample_command)
-
 def move_input_task(**kwargs):
-    pprint.pprint(kwargs)
     params = kwargs['params']
     session_metadata = params['session_metadata']
     parent_output_dir = params['parent_output_dir']
@@ -67,28 +48,6 @@ def move_input_task(**kwargs):
         src = current_dir + '/' + file_path
         dst = target_dir + '/' + file_name
         shutil.copyfile(src, dst)
-
-def resample_task(**kwargs):
-    params = kwargs['params']
-    file_metadata = params['metadata']
-    mic_name = params['mic_name']
-    session_num = params['session_num']
-    pipeline_name = params['pipeline_name']
-
-    print(file_metadata)
-    input_file_name = file_metadata['filename']
-    channels = file_metadata['channels']
-    file_dir = '%s/session%d/%s' % (params['parent_output_dir'],
-            session_num,
-            file_metadata['type'])
-    output_dir = file_dir + '/0_raw'
-    create_dir_if_not_exists(output_dir)
-    
-    output_prefix = '%s/%s-session%d-%s' %(output_dir, pipeline_name, session_num,
-            mic_name) 
-    resample(channels, input_file_name, output_prefix)
-
-    return output_dir, pipeline_name,file_dir
 
 def segmentation_task(**kwargs):
     ti = kwargs['ti']
@@ -259,23 +218,7 @@ def get_task_by_id(task_id, dag):
 def get_dummy_task(session_num, dag):
     return DummyOperator(task_id='dummy_%s' % session_num, dag=dag)
 
-def get_resample_task(mic_name, mic_metadata, session_num, dag,
-        parent_output_dir, pipeline_name):
-    t_resample = PythonOperator(task_id='resample_%s' % mic_name, 
-                                        python_callable=resample_task,
-                                        params={
-                                            "session_num": session_num,
-                                            "mic_name": mic_name,
-                                            "metadata": mic_metadata,
-                                            "parent_output_dir":
-                                            parent_output_dir,
-                                            "pipeline_name":
-                                            pipeline_name
-                                        },
-                                        dag=dag,
-                                        provide_context=True)
 
-    return t_resample
 
 def get_task_by_type(task_type, inputs, session_num, session_metadata, parent_output_dir,
         pipeline_name, dag):
