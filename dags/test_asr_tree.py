@@ -49,7 +49,7 @@ def move_input_task(**kwargs):
         dst = target_dir + '/' + file_name
         shutil.copyfile(src, dst)
 
-def segmentation_task(**kwargs):
+def vad_task(**kwargs):
     ti = kwargs['ti']
     msg = ti.xcom_pull(task_ids='resample_%s' % kwargs['params']['mic_name'])
     
@@ -83,7 +83,7 @@ def segmentation_task(**kwargs):
     return output_dir, msg[1], resample_file_id
 
 def get_vad_task(mic_name, session_name, pipeline_name, dag):
-    t_segmentation = PythonOperator(task_id='segmentation_%s' %
+    t_vad = PythonOperator(task_id='vad_%s' %
         mic_name,
         params={
             "mic_name": mic_name,
@@ -91,10 +91,10 @@ def get_vad_task(mic_name, session_name, pipeline_name, dag):
             "pipeline_name": pipeline_name
         },
         dag=dag,
-        python_callable=segmentation_task,
+        python_callable=vad_task,
         provide_context=True)
 
-    return t_segmentation
+    return t_vad
 
 def decoder_task(**kwargs):
     params = kwargs['params']
@@ -106,8 +106,8 @@ def decoder_task(**kwargs):
     wav_mic_name = wav_hybrid['mic_name']
     seg_speaker_id = seg_hybrid['speaker_id']
     wav_speaker_id = wav_hybrid['speaker_id']
-    seg_task_id = "segmentation_%s" % seg_mic_name
-    wav_task_id = "segmentation_%s" % wav_mic_name
+    seg_task_id = "vad_%s" % seg_mic_name
+    wav_task_id = "vad_%s" % wav_mic_name
 
     ti = kwargs['ti']
     seg_data = ti.xcom_pull(task_ids=seg_task_id)
