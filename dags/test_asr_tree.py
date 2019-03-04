@@ -1,12 +1,7 @@
 import os
-import errno
-import subprocess
 import datetime as dt
-import shutil
 import json
 
-from shutil import copyfile
-from pathlib import Path
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
@@ -16,6 +11,7 @@ from tasks.helpers import change_segment_id, create_dir_if_not_exists
 from tasks.resample import get_resample_task
 from tasks.vad import get_vad_task
 from tasks.decoder import get_decoder_task
+from tasks.move_input import get_move_input_task
 
 RESAMPLE = 'resample'
 VAD = 'vad'
@@ -28,28 +24,6 @@ default_args = {
         'retries': 2,
         'retry_delay': dt.timedelta(minutes=5),
 }
-
-def move_input_task(**kwargs):
-    params = kwargs['params']
-    session_metadata = params['session_metadata']
-    parent_output_dir = params['parent_output_dir']
-
-#    for attr in dir(obj):
-#        print("obj.%s = %r" % (attr, getattr(obj, attr)))
-
-    current_dir = os.getcwd()
-    target_dir = "%s/moved_input/%s" % (current_dir, parent_output_dir)
-            
-    create_dir_if_not_exists(target_dir)
- 
-    for mic_name in session_metadata:
-        # copy to json_id/raw/
-        file_path = session_metadata[mic_name]['filename']
-        file_name = os.path.basename(file_path)
-#           print(file_name)
-        src = current_dir + '/' + file_path
-        dst = target_dir + '/' + file_name
-        shutil.copyfile(src, dst)
 
 def process_records():
     # We will keep the records of the last 2 days. As soon as the dag becomes
@@ -140,16 +114,7 @@ for metadata_id, file_path, created_at in metadata_record_list:
                     default_args=default_args,
                     schedule_interval='@once')
 
-            t_move_input_task = PythonOperator(
-                task_id='move_input',
-                dag=dag2,
-                python_callable=move_input_task,
-                params={
-                    "parent_output_dir": parent_output_dir,
-                    "session_metadata": session_metadata
-                },
-                provide_context=True
-            )
+            t_move_input_task = get_move_input_task(dag2, parent_output_dir, session_metadata)
 
             steps = pipeline_info['steps'][str(session_num)]
             
@@ -175,4 +140,3 @@ for metadata_id, file_path, created_at in metadata_record_list:
                         step_task.set_upstream(step_tasks[parent_id])
 
             globals()[dag2_id] = dag2
-
