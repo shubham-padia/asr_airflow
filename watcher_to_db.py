@@ -50,11 +50,14 @@ class Handler(FileSystemEventHandler):
     def on_created(event):
         print(event)
         file_path = event.src_path
-        session = Session()
-        metadata_entry = MetadataRegistry(file_path, False)
-        session.add(metadata_entry)
-        session.commit()
-        session.close()
+        file_extension = os.path.splitext(file_path)[1]
+        print(file_extension)
+        if file_extension == '.json':
+            session = Session()
+            metadata_entry = MetadataRegistry(file_path, False)
+            session.add(metadata_entry)
+            session.commit()
+            session.close()
 
 if __name__ == '__main__':
     watcher = Watcher()
