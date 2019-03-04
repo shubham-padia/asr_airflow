@@ -1,5 +1,13 @@
 import sys
 import os
+from pathlib import Path
+
+def create_dir_if_not_exists(directory):
+    try:
+        os.makedirs(directory)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
 
 def change_segment_id(segment_file_location, new_file_location):
     """
