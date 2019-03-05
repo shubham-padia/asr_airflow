@@ -43,8 +43,10 @@ def decoder_task(**kwargs):
     symlink_seg_file = "%s.seg" % symlink_prefix
 
     create_dir_if_not_exists(symlink_dir)
-    os.symlink(wav_file, symlink_wav_file)
-    change_segment_id(seg_file, symlink_seg_file)
+    if not os.path.exists(symlink_wav_file):
+        os.symlink(wav_file, symlink_wav_file)
+    if not os.path.exists(symlink_seg_file):
+        change_segment_id(seg_file, symlink_seg_file)
 
     print("output_dir: %s" % output_dir)
     print("%s" % symlink_seg_file)
