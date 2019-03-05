@@ -1,5 +1,5 @@
 import subprocess
-from ..helpers import create_dir_if_not_exists
+from tasks.helpers import create_dir_if_not_exists
 from airflow.operators.python_operator import PythonOperator
 
 def resample(channels, input_file_name, output_prefix):

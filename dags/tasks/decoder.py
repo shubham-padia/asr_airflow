@@ -65,8 +65,8 @@ def get_decoder_task(session_num, hybrid, parent_output_dir, dag):
     seg_hybrid = hybrid['seg']
     wav_hybrid = hybrid['wav']
 
-    t_decoder = PythonOperator(task_id='hybrid_seg_%s_wav_%s' % 
-            (seg_hybrid['mic_name'], wav_hybrid['mic_name']),
+    t_decoder = PythonOperator(task_id='hybrid_seg_%s_%s_wav_%s_%s' % 
+            (seg_hybrid['mic_name'], seg_hybrid['speaker_id'], wav_hybrid['mic_name'], wav_hybrid['speaker_id']),
             dag=dag,
             params={
                 "session_num": session_num,
