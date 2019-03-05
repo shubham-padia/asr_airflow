@@ -117,7 +117,8 @@
       },
       "6": {
         "parent_id": [
-          4
+          4,
+          5
         ],
         "task_type": "decoder",
         "inputs": {
@@ -126,17 +127,20 @@
             "speaker_id": 1
           },
           "wav": {
-            "mic_name": "ceiling",
+            "mic_name": "table",
             "speaker_id": 1
           }
         }
       },
       "7": {
-        "parent_id": [5],
+        "parent_id": [
+          4,
+          5
+        ],
         "task_type": "decoder",
         "inputs": {
           "seg": {
-            "mic_name": "table",
+            "mic_name": "ceiling",
             "speaker_id": 2
           },
           "wav": {
