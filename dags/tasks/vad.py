@@ -36,8 +36,7 @@ def vad_task(**kwargs):
     return {
         'task_type': 'vad',
         'output_dir': output_dir,
-        'file_id': parent_data['file_id'],
-        'resample_file_id': resample_file_id
+        'file_id': parent_data['file_id']
     }
 
 def get_vad_task(mic_name, session_name, file_id, dag):

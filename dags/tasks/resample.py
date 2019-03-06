@@ -16,7 +16,6 @@ def resample_task(**kwargs):
     session_num = params['session_num']
     file_id = params['file_id']
 
-    print(file_metadata)
     input_file_name = file_metadata['filename']
     channels = file_metadata['channels']
     file_dir = '%s/session%d/%s' % (params['parent_output_dir'],
