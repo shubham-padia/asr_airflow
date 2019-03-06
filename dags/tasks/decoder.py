@@ -21,12 +21,11 @@ def decoder_task(**kwargs):
     seg_data = ti.xcom_pull(task_ids=seg_task_id)
     wav_data = ti.xcom_pull(task_ids=wav_task_id)
     
-    output_prefix = "session%s-%s-seg-%s-wav-%s" % (params['session_num'],
-            seg_speaker_id, seg_mic_name, wav_mic_name)
-    output_dir = "%s/%s/session%d/hybrid/decoder/%s" % (os.getcwd(),
-            params['parent_output_dir'], params['session_num'], output_prefix) 
+    output_prefix = "session%s-seg-%s-%s-wav-%s-%s" % (params['session_num'],
+            seg_mic_name, seg_speaker_id, wav_mic_name, wav_speaker_id)
+    output_dir = "%s/%s/session%d/hybrid/decoder" % (os.getcwd(),
+            params['parent_output_dir'], params['session_num']) 
     create_dir_if_not_exists(output_dir)
-    
     
     # The decode bash script requires the segment file name and the wav
     # file name to be the same. We are using symlinks to make them have the
@@ -62,6 +61,7 @@ def decoder_task(**kwargs):
             '../systems', symlink_seg_file, symlink_wav_file, output_dir,
             output_prefix]
     subprocess.check_call(decoder_command, env=my_env, cwd=decoder_dir)
+
 
 def get_decoder_task(session_num, hybrid, parent_output_dir, dag):
     seg_hybrid = hybrid['seg']
