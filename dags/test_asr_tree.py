@@ -58,16 +58,16 @@ def get_dummy_task(session_num, dag):
     return DummyOperator(task_id='dummy_%s' % session_num, dag=dag)
 
 def get_task_by_type(task_type, inputs, session_num, session_metadata, parent_output_dir,
-        pipeline_name, dag):
+        file_id, dag):
 
     if task_type == RESAMPLE:
         mic_name = inputs['mic_name']
         mic_metadata = session_metadata[mic_name]
         return get_resample_task(mic_name, mic_metadata, session_num, dag,
-                parent_output_dir, pipeline_name)
+                parent_output_dir, file_id)
     elif task_type == VAD:
         mic_name = inputs['mic_name']
-        return get_vad_task(mic_name, session_num, pipeline_name, dag)
+        return get_vad_task(mic_name, session_num, file_id, dag)
     elif task_type == DECODER:
         return get_decoder_task(session_num, inputs, parent_output_dir, dag)
     elif task_type == DUMMY:
@@ -90,13 +90,13 @@ for metadata_id, file_path, created_at in metadata_record_list:
 
     if pipeline_info.get('steps', None):
         metadata = pipeline_info['metadata']
-        pipeline_name = os.path.splitext(os.path.basename(file_path))[0]
-        parent_output_dir = "output/%s/%s" % (pipeline_name, created_at_str)
+        file_id = os.path.splitext(os.path.basename(file_path))[0]
+        parent_output_dir = "output/%s/%s" % (file_id, created_at_str)
         
         for session_num in pipeline_info['steps']:
             session_num = int(session_num)
             session_metadata = metadata['session'][session_num - 1]
-            dag2_id = 'atree_%s_session_%d' % (pipeline_name, session_num) 
+            dag2_id = 'atree_%s_session_%d' % (file_id, session_num) 
             dag2 = DAG(
                     dag2_id,
                     default_args=default_args,
@@ -116,7 +116,7 @@ for metadata_id, file_path, created_at in metadata_record_list:
                         session_num,
                         session_metadata,
                         parent_output_dir,
-                        pipeline_name,
+                        file_id,
                         dag2)
                 step_tasks[int(step)] = step_task
                 

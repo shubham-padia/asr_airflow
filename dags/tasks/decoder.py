@@ -30,10 +30,10 @@ def decoder_task(**kwargs):
     # The decode bash script requires the segment file name and the wav
     # file name to be the same. We are using symlinks to make them have the
     # same file name. They also need to be in the same directory.
-    seg_file = "%s/%s-session%s-%s-%s.seg" % (seg_data[0], seg_data[2],
+    seg_file = "%s/%s-session%s-%s-%s.seg" % (seg_data['output_dir'], seg_data['file_id'],
             params['session_num'], seg_mic_name, seg_speaker_id)
-    wav_file = "%s/%s-session%s-%s-%s.wav" % (wav_data[0],
-            wav_data[2], params['session_num'], wav_mic_name,
+    wav_file = "%s/%s-session%s-%s-%s.wav" % (wav_data['output_dir'],
+            wav_data['file_id'], params['session_num'], wav_mic_name,
             wav_speaker_id)
     
     symlink_dir = "%s/input-symlinks" % (output_dir)

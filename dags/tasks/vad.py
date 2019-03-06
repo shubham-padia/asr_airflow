@@ -5,11 +5,11 @@ from airflow.operators.python_operator import PythonOperator
 
 def vad_task(**kwargs):
     ti = kwargs['ti']
-    msg = ti.xcom_pull(task_ids='resample_%s' % kwargs['params']['mic_name'])
+    parent_data = ti.xcom_pull(task_ids='resample_%s' % kwargs['params']['mic_name'])
     
-    resample_dir = os.getcwd() + '/' + msg[0]
-    resample_file_id = msg[1] 
-    output_dir = os.getcwd() + '/' + msg[2] + '/1_clean'
+    resample_dir = os.getcwd() + '/' + parent_data['output_dir']
+    resample_file_id = parent_data['file_id']
+    output_dir = os.getcwd() + '/' + parent_data['file_dir'] + '/1_clean'
     create_dir_if_not_exists(output_dir)
     
     vad_dir = '/home/shubham/backend_asr/vad8_dnn'
@@ -33,14 +33,19 @@ def vad_task(**kwargs):
     print(output_dir)
     subprocess.check_call(vad_command, env=my_env, cwd=vad_dir)
 
-    return output_dir, msg[1], resample_file_id
+    return {
+        'task_type': 'vad',
+        'output_dir': output_dir,
+        'file_id': parent_data['file_id'],
+        'resample_file_id': resample_file_id
+    }
 
-def get_vad_task(mic_name, session_name, pipeline_name, dag):
+def get_vad_task(mic_name, session_name, file_id, dag):
     t_vad = PythonOperator(task_id='vad_%s' %
         mic_name,
         params={
             "mic_name": mic_name,
-            "pipeline_name": pipeline_name
+            "file_id": file_id
         },
         dag=dag,
         python_callable=vad_task,

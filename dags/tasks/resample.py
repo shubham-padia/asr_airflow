@@ -14,7 +14,7 @@ def resample_task(**kwargs):
     file_metadata = params['metadata']
     mic_name = params['mic_name']
     session_num = params['session_num']
-    pipeline_name = params['pipeline_name']
+    file_id = params['file_id']
 
     print(file_metadata)
     input_file_name = file_metadata['filename']
@@ -25,14 +25,19 @@ def resample_task(**kwargs):
     output_dir = file_dir + '/0_raw'
     create_dir_if_not_exists(output_dir)
     
-    output_prefix = '%s/%s-session%d-%s' %(output_dir, pipeline_name, session_num,
+    output_prefix = '%s/%s-session%d-%s' %(output_dir, file_id, session_num,
             mic_name) 
     resample(channels, input_file_name, output_prefix)
 
-    return output_dir, pipeline_name,file_dir
+    return {
+            'task_type': resample,
+            'output_dir': output_dir,
+            'file_id': file_id,
+            'file_dir': file_dir
+    }
 
 def get_resample_task(mic_name, mic_metadata, session_num, dag,
-        parent_output_dir, pipeline_name):
+        parent_output_dir, file_id):
 
     return PythonOperator(
         task_id='resample_%s' % mic_name, 
@@ -42,7 +47,7 @@ def get_resample_task(mic_name, mic_metadata, session_num, dag,
             "mic_name": mic_name,
             "metadata": mic_metadata,
             "parent_output_dir": parent_output_dir,
-            "pipeline_name": pipeline_name
+            "file_id": file_id
         },
         dag=dag,
         provide_context=True)
