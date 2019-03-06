@@ -25,7 +25,9 @@ def change_segment_id(segment_file_location, new_file_location):
     with open(segment_file_location) as segment_file:
         for line in segment_file.readlines():
             result = line.split(' ')
-            result[0] = new_file_id
+            if not line.startswith(';;'):
+                result[0] = new_file_id
+           
             results.append(result)
 
     with open(new_file_location, 'w+') as new_file:
