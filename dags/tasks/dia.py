@@ -3,6 +3,7 @@ import subprocess
 
 from tasks.helpers import create_dir_if_not_exists
 from airflow.operators.python_operator import PythonOperator
+from airflow.models import Variable
 
 
 def dia_task(**kwargs):
@@ -23,7 +24,7 @@ def dia_task(**kwargs):
     output_file = output_dir + '/' + resample_name + '.seg'
     create_dir_if_not_exists(output_dir)
 
-    lium_path = '/home/shubham/backend_asr/diarization/LIUM_SpkDiarization-8.4.1.jar'
+    lium_path = Variable.get('lium_path')
 
     dia_command = ['java', '-Xmx2048m', '-jar', lium_path, '--fInputMask=' +
                    resample_file, '--sOutputMask=' + output_file, '--doCEClustering', resample_name]
