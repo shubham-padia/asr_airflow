@@ -1,0 +1,5 @@
+{
+    "lium_path": "/home/shubham/backend_asr/diarization/LIUM_SpkDiarization-8.4.1.jar",
+    "vad_dir": "/home/shubham/backend_asr/vad8_dnn",
+    "vad_script": "vad_DNN_v4_test2.sh"
+}
