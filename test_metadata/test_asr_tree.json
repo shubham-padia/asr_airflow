@@ -1,5 +1,5 @@
 {
-  "version": "0.1.5",
+  "version": "0.0.1",
   "metadata": {
     "date": "28-nov-2018",
     "session": [
@@ -110,42 +110,57 @@
         "parent_id": [
           3
         ],
-        "task_type": "vad",
+        "task_type": "diarization",
         "inputs": {
-          "mic_name": "table"
+          "mic_name": "table",
+          "speaker_id": 1
         }
       },
       "6": {
         "parent_id": [
-          4,
-          5
+          3
         ],
-        "task_type": "decoder",
+        "task_type": "diarization",
         "inputs": {
-          "seg": {
-            "mic_name": "ceiling",
-            "speaker_id": 1
-          },
-          "wav": {
-            "mic_name": "table",
-            "speaker_id": 1
-          }
+          "mic_name": "table",
+          "speaker_id": 2
         }
       },
       "7": {
         "parent_id": [
-          4,
-          5
+          5,
+          3
         ],
         "task_type": "decoder",
         "inputs": {
           "seg": {
-            "mic_name": "ceiling",
-            "speaker_id": 2
+            "mic_name": "table",
+            "source": "diarization",
+            "speaker_id": 1
           },
           "wav": {
+            "mic_name": "ceiling",
+            "source": "resample",
+            "speaker_id": 1
+          }
+        }
+      },
+      "8": {
+        "parent_id": [
+          6,
+          3
+        ],
+        "task_type": "decoder",
+        "inputs": {
+          "seg": {
             "mic_name": "table",
-            "speaker_id": 2
+            "speaker_id": 2,
+            "source": "diarization"
+          },
+          "wav": {
+            "mic_name": "ceiling",
+            "speaker_id": 2,
+            "source": "resample"
           }
         }
       }

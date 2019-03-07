@@ -3,6 +3,8 @@ airflow.env
 moved_input/
 metadata/
 1_clean/
+1_clean_dia/
+1_clean_vad/
 0_raw/
 *.pid
 logs/

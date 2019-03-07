@@ -7,9 +7,9 @@ def vad_task(**kwargs):
     ti = kwargs['ti']
     parent_data = ti.xcom_pull(task_ids='resample_%s' % kwargs['params']['mic_name'])
     
-    resample_dir = os.getcwd() + '/' + parent_data['output_dir']
+    resample_dir = parent_data['output_dir']
     resample_file_id = parent_data['file_id']
-    output_dir = os.getcwd() + '/' + parent_data['file_dir'] + '/1_clean'
+    output_dir = parent_data['file_dir'] + '/1_clean_vad'
     create_dir_if_not_exists(output_dir)
     
     vad_dir = '/home/shubham/backend_asr/vad8_dnn'
@@ -39,7 +39,7 @@ def vad_task(**kwargs):
         'file_id': parent_data['file_id']
     }
 
-def get_vad_task(mic_name, session_name, file_id, dag):
+def get_vad_task(mic_name, file_id, dag):
     t_vad = PythonOperator(task_id='vad_%s' %
         mic_name,
         params={

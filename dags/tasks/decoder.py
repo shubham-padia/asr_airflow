@@ -4,6 +4,7 @@ import subprocess
 from airflow.operators.python_operator import PythonOperator
 from tasks.helpers import create_dir_if_not_exists, change_segment_id
 
+
 def decoder_task(**kwargs):
     params = kwargs['params']
     seg = params['seg']
@@ -12,12 +13,22 @@ def decoder_task(**kwargs):
     wav_hybrid = wav['hybrid']
     seg_mic_name = seg_hybrid['mic_name']
     wav_mic_name = wav_hybrid['mic_name']
+    seg_source = seg_hybrid.get('source', 'vad')
+    wav_source = wav_hybrid.get('source', 'vad')
     seg_speaker_id = seg_hybrid['speaker_id']
     wav_speaker_id = wav_hybrid['speaker_id']
-    seg_task_id = "vad_%s" % seg_mic_name
-    wav_task_id = "vad_%s" % wav_mic_name
+
+    seg_task_id = "%s_%s" % (seg_source, seg_mic_name)
+    wav_task_id = "%s_%s" % (wav_source, wav_mic_name)
+
+    if seg_source == 'diarization':
+        seg_task_id = "%s_%s" % (seg_task_id, seg_speaker_id)
+    if wav_source == 'diarization':
+        wav_task_id = "%s_%s" % (wav_task_id, wav_speaker_id)
 
     ti = kwargs['ti']
+    print("seg task id: %s" % seg_task_id)
+    print("wav task id: %s" % wav_task_id)
     seg_data = ti.xcom_pull(task_ids=seg_task_id)
     wav_data = ti.xcom_pull(task_ids=wav_task_id)
     
@@ -35,15 +46,20 @@ def decoder_task(**kwargs):
     wav_file = "%s/%s-session%s-%s-%s.wav" % (wav_data['output_dir'],
             wav_data['file_id'], params['session_num'], wav_mic_name,
             wav_speaker_id)
-    
+
+    print("seg file: %s" % seg_file)
+    print("wav file: %s" % wav_file)
     symlink_dir = "%s/input-symlinks" % (output_dir)
     symlink_prefix = "%s/%s" % (symlink_dir, output_prefix)
     symlink_wav_file = "%s.wav" % symlink_prefix
     symlink_seg_file = "%s.seg" % symlink_prefix
 
     create_dir_if_not_exists(symlink_dir)
-    if not os.path.exists(symlink_wav_file):
+    try:
         os.symlink(wav_file, symlink_wav_file)
+    except OSError:
+        print("File exists, skipping symlink creation")
+
     if not os.path.exists(symlink_seg_file):
         change_segment_id(seg_file, symlink_seg_file)
 

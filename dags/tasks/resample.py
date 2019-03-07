@@ -1,3 +1,4 @@
+import os
 import subprocess
 from tasks.helpers import create_dir_if_not_exists
 from airflow.operators.python_operator import PythonOperator
@@ -18,14 +19,14 @@ def resample_task(**kwargs):
 
     input_file_name = file_metadata['filename']
     channels = file_metadata['channels']
-    file_dir = '%s/session%d/%s' % (params['parent_output_dir'],
+    file_dir = '%s/%s/session%d/%s' % (os.getcwd(), params['parent_output_dir'],
             session_num,
             file_metadata['type'])
     output_dir = file_dir + '/0_raw'
     create_dir_if_not_exists(output_dir)
     
-    output_prefix = '%s/%s-session%d-%s' %(output_dir, file_id, session_num,
-            mic_name) 
+    output_prefix = '%s/%s-session%d-%s' % (output_dir, file_id, session_num,
+            mic_name)
     resample(channels, input_file_name, output_prefix)
 
     return {
