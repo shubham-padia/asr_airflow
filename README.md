@@ -53,6 +53,8 @@ psql -d postgres
 ```sql
 CREATE USER asr_airflow WITH PASSWORD 'asr_airflow_password';
 CREATE DATABASE asr_airflow WITH OWNER asr_airflow;
+CREATE USER watcher WITH PASSWORD 'yeshallnotpass';
+CREATE DATABASE watcher WITH OWNER watcher;
 ```
 
 * Once the databases are created, exit the psql shell with `\q` followed by ENTER.
