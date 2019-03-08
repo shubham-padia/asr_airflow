@@ -29,6 +29,7 @@ pyenv activate asr_airflow
 
 5.) Install dependencies
 ```
+export SLUGIFY_USES_TEXT_UNIDECODE=yes
 pip install -r requirements.txt
 ```
 
