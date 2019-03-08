@@ -72,7 +72,24 @@ cp env-example .env
 - Change `AIRFLOW__CORE__SQL_ALCHEMY_CONN` and `AIRFLOW_CONN_AIRFLOW_DB` to point to the database we created earlier i.e. `asr_airflow` db.
 - Change `PATH` to your current system path, make sure the virtual environment that we created earlier is active. You can view your current path by typing `echo $PATH`
 
-9.) Change the systemd service paths and copy the systemd services to your system's service folder:
+9.) Copy the example services from `example_services` to a directory named `services`.
+Please try to name the directory for the actual services as `services` as it has been added
+to the `.gitignore`.
+```cp -r example_services/ services```
+
+10.) Change the systemd service paths in the `services` directory according to your system:
+- `EnvironmentFile` should point to the absolute location of the .env file
+that we created in the earlier step.
+- `User` should be your linux user name and `Group` should be your user group.
+- `ExecStart` should use the binary present in your virtual environment.
+e.g. `/home/user/.pyenv/versions/3.7.2/envs/asr_airflow/bin/airflow`
+or `/home/user/.pyenv/versions/3.7.2/envs/asr_airflow/bin/python` for the python binary.
+- In case of airflow webserver or scheduler, an extra argument for `--pid` is required in `ExecStart`
+e.g. `--pid /home/user/github/asr_airflow/scheduler.pid`
+- Set `WorkingDirectory` to `/home/user/github/asr_airflow`
+
+11.) copy the systemd services to your system's service folder:
+
 ```
 cp -r services/ /lib/systemd/system
 systemctl enable watcher-to-db
@@ -80,19 +97,19 @@ systemctl enable airflow-scheduler
 systemctl enable airflow-webserver
 ```
 
-10.) Start the server
+12.) Start the server
 ```
 systemctl start watcher-to-db
 systemctl start airflow-webserver
 systemctl start airflow-scheduler
 ```
 
-11.) 
+13.) 
 - Go to Admin > Variables
 - Import variables by choosing the file `airflow_default_variables.json`
 - Change the variables to point to the path of scripts on your system.
 
-12.)
+14.)
 - Go to Admin > Connections
 - Add a connection with the following details:
 ```
