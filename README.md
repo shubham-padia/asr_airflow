@@ -61,8 +61,7 @@ CREATE DATABASE watcher WITH OWNER watcher;
 
 7.) Create the tables.
 ```
-python models/create_db.py
-alembic upgrade
+python -m models.create_db
 ```
 
 8.) Create application environment variables.
@@ -70,8 +69,8 @@ alembic upgrade
 cp env-example .env
 ```
 - Change `AIRFLOW_HOME` to your current directory i.e. the one you cloned the project into.
-- Change `AIRFLOW__CORE__SQL_ALCHEMY_CONN` and `AIRFLOW_CONN_AIRFLOW_DB` to point to the database we created earlier.
-- Change `PATH` to your current path, make sure the virtual environment that we created earlier is active. You can view your current path by typing `echo $PATH`
+- Change `AIRFLOW__CORE__SQL_ALCHEMY_CONN` and `AIRFLOW_CONN_AIRFLOW_DB` to point to the database we created earlier i.e. `asr_airflow` db.
+- Change `PATH` to your current system path, make sure the virtual environment that we created earlier is active. You can view your current path by typing `echo $PATH`
 
 9.) Change the systemd service paths and copy the systemd services to your system's service folder:
 ```
@@ -86,4 +85,22 @@ systemctl enable airflow-webserver
 systemctl start watcher-to-db
 systemctl start airflow-webserver
 systemctl start airflow-scheduler
+```
+
+11.) 
+- Go to Admin > Variables
+- Import variables by choosing the file `airflow_default_variables.json`
+- Change the variables to point to the path of scripts on your system.
+
+12.)
+- Go to Admin > Connections
+- Add a connection with the following details:
+```
+Conn Id: watcher
+Conn Type: Postgres
+Host: localhost
+Schema: (leave it blank)
+Login: watcher
+Password: yeshallnotpass
+Port: 5432
 ```
