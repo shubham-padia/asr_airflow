@@ -4,9 +4,15 @@ from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
 from models.base import Base
 from models.metadata_registry import MetadataRegistry
+from envparse import env
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+# set watcher db url from the env
+env.read_envfile()
+config.set_main_option('sqlalchemy.url', env('WATCHER_DB_URL')) 
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
