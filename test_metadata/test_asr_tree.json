@@ -57,21 +57,7 @@
           "asr_type": "lvscr"
         }
       }
-    ],
-    "hybrids": {
-      "2": [
-        {
-          "seg": {
-            "mic_name": "ceiling",
-            "speaker_id": 1
-          },
-          "wav": {
-            "mic_name": "closetalk",
-            "speaker_id": 1
-          }
-        }
-      ]
-    }
+    ]
   },
   "steps": {
     "2": {
