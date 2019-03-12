@@ -1,7 +1,7 @@
 AIRFLOW_HOME=/home/shubham/github/asr_airflow
 AIRFLOW_CONFIG=$AIRFLOW_HOME/airflow.cfg
-AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql+psycopg2://127.0.0.1:5432/db_name?user=user&password=password"
-AIRFLOW_CONN_AIRFLOW_DB="postgresql://airflow@127.0.0.1:5432/airflow"
+AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql+psycopg2://127.0.0.1:5432/asr_airflow?user=asr_airflow&password=asr_airflow_password"
+AIRFLOW_CONN_AIRFLOW_DB="postgresql://asr_airflow@127.0.0.1:5432/asr_airflow"
 LOGS_PARENT_DIR=$AIRFLOW_HOME/logs
 AIRFLOW__CORE__BASE_LOG_FOLDER=$LOGS_PARENT_DIR/pipelines
 
