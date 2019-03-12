@@ -8,6 +8,15 @@ cd asr_airflow
 ```
 
 1.) Install [pyenv](https://github.com/pyenv/pyenv) for managing virtual environments using [pyenv-installer](https://github.com/pyenv/pyenv-installer) (You can use any environment manager you like):
+
+Install prerequisites for Ubuntu/Debian:
+```
+sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
+libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
+xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
+```
+For other distributions or any other build problems, please refer to the this [wiki](https://github.com/pyenv/pyenv/wiki/Common-build-problems)
+ 
 ```bash
 curl https://pyenv.run | bash
 ```
