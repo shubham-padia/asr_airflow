@@ -60,12 +60,7 @@ CREATE DATABASE watcher WITH OWNER watcher;
 
 * Once the databases are created, exit the psql shell with `\q` followed by ENTER.
 
-7.) Create the tables.
-```
-python -m models.create_db
-```
-
-8.) Create application environment variables.
+7.) Create application environment variables.
 ```
 cp env-example .env
 ```
@@ -73,6 +68,11 @@ cp env-example .env
 - Change `AIRFLOW__CORE__SQL_ALCHEMY_CONN` and `AIRFLOW_CONN_AIRFLOW_DB` to point to the database we created earlier i.e. `asr_airflow` db.
 - Change `PATH` to your current system path, make sure the virtual environment that we created earlier is active. You can view your current path by typing `echo $PATH`
 - Set `WATCHER_DB_URL` to the url of the watcher database we created in the earlier steps.
+
+8.) Create the tables.
+```
+python -m models.create_db
+```
 
 9.) Copy the example services from `example_services` to a directory named `services`.
 Please try to name the directory for the actual services as `services` as it has been added
