@@ -12,3 +12,7 @@ AIRFLOW__CORE__BASE_LOG_FOLDER=$LOGS_PARENT_DIR/pipelines
 
 WATCHER_DB_URL = "postgresql://watcher:yeshallnotpass@localhost:5432/watcher"
 PATH=export_path_here
+
+# Airflow watcher connection details. Only change this if your DB does not use the default credentials 
+WATCHER_LOGIN=watcher
+WATCHER_PASSWORD=watcher
