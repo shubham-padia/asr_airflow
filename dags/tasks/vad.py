@@ -20,7 +20,7 @@ def vad_task(**kwargs):
     my_env=os.environ.copy()
     my_env["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
     
-    intm_id = kwargs['ts_nodash'] + kwargs['params']['mic_name'] 
+    intm_id = kwargs['ts_nodash'] + 'session' + str(kwargs['params']['session_num']) + kwargs['params']['mic_name']
     vad_command = ["bash", vad_script, resample_dir, output_dir, intm_id]
     
     print("vad command")
@@ -41,10 +41,11 @@ def vad_task(**kwargs):
         'file_id': parent_data['file_id']
     }
 
-def get_vad_task(mic_name, file_id, dag):
+def get_vad_task(session_num, mic_name, file_id, dag):
     t_vad = PythonOperator(task_id='vad_%s' %
         mic_name,
         params={
+            "session_num": session_num,
             "mic_name": mic_name,
             "file_id": file_id
         },
