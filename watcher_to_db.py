@@ -45,16 +45,27 @@ class Watcher:
         # `self.observer` stops running.
         self.observer.join()
 
+def parse_json(metadata_file_path):
+    metadata = None 
+    with open(metadata_file_path, "r") as stream:
+        try:
+            metadata = json.loads(stream.read())
+        except ValueError as exc:
+            print(exc)
+    
+    return metadata
+
 class Handler(FileSystemEventHandler):
     @staticmethod
     def on_created(event):
         print(event)
         file_path = event.src_path
+        pipeline_info = parse_json(file_path)
         file_extension = os.path.splitext(file_path)[1]
         print(file_extension)
         if file_extension == '.json':
             session = Session()
-            metadata_entry = MetadataRegistry(file_path, False)
+            metadata_entry = MetadataRegistry(file_path, False, pipeline_info.get('version', '0.0.1'))
             session.add(metadata_entry)
             session.commit()
             session.close()

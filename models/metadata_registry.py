@@ -10,12 +10,13 @@ class MetadataRegistry(Base):
     id = Column(Integer, primary_key=True)
     filename = Column(String)
     status = Column(Boolean(name='ck_status_bool'))
-    
+    version = Column(String)
     # Make sure you aren't using default=datetime.datetime.utcnow(); you want
     # to pass the utcnow function, not the result of evaluating it at module
     # load.
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     
-    def __init__(self, filename, status=False):
+    def __init__(self, filename, version, status=False):
         self.filename = filename
         self.status = status
+        self.version = version

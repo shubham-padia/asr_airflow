@@ -19,6 +19,7 @@ VAD = 'vad'
 DECODER = 'decoder'
 DUMMY = 'dummy'
 DIA = 'diarization'
+CURRENT_VERSION = '0.0.2'
 
 default_args = {
         'owner': 'me',
@@ -34,7 +35,7 @@ def process_records():
     days_threshold = 30
     date_threshold = (dt.date.today() - dt.timedelta(days_threshold)).isoformat()
     select_sql = "SELECT id, filename, created_at from metadata_registry where created_at > \
-    '{}' AND NOT status".format(date_threshold)
+    '{}' AND NOT status and version = '{}'".format(date_threshold, CURRENT_VERSION)
 
     pg_hook = PostgresHook(postgres_conn_id='watcher')
     connection = pg_hook.get_conn()
