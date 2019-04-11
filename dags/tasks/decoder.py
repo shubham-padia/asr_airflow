@@ -27,8 +27,6 @@ def decoder_task(**kwargs):
         wav_task_id = "%s_%s" % (wav_task_id, wav_speaker_id)
 
     ti = kwargs['ti']
-    print("seg task id: %s" % seg_task_id)
-    print("wav task id: %s" % wav_task_id)
     seg_data = ti.xcom_pull(task_ids=seg_task_id)
     wav_data = ti.xcom_pull(task_ids=wav_task_id)
     
@@ -45,10 +43,8 @@ def decoder_task(**kwargs):
             params['session_num'], seg_mic_name, seg_speaker_id)
     wav_file = "%s/%s-session%s-%s-%s.wav" % (wav_data['output_dir'],
             wav_data['file_id'], params['session_num'], wav_mic_name,
-            wav_speaker_id)
+            wav_speaker_id)]
 
-    print("seg file: %s" % seg_file)
-    print("wav file: %s" % wav_file)
     symlink_dir = "%s/input-symlinks" % (output_dir)
     symlink_prefix = "%s/%s" % (symlink_dir, output_prefix)
     symlink_wav_file = "%s.wav" % symlink_prefix
@@ -62,10 +58,6 @@ def decoder_task(**kwargs):
 
     if not os.path.exists(symlink_seg_file):
         change_segment_id(seg_file, symlink_seg_file)
-
-    print("output_dir: %s" % output_dir)
-    print("%s" % symlink_seg_file)
-    print("%s" % symlink_wav_file)
     
     decoder_dir = '/home/shubham/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts'
     decoder_script = 'decoding_stdl.sh'

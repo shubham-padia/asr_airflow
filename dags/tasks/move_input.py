@@ -9,9 +9,6 @@ def move_input_task(**kwargs):
     session_metadata = params['session_metadata']
     parent_output_dir = params['parent_output_dir']
 
-#    for attr in dir(obj):
-#        print("obj.%s = %r" % (attr, getattr(obj, attr)))
-
     current_dir = os.getcwd()
     target_dir = "%s/moved_input/%s" % (current_dir, parent_output_dir)
             

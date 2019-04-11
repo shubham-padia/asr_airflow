@@ -22,17 +22,7 @@ def vad_task(**kwargs):
     
     intm_id = kwargs['ts_nodash'] + 'session' + str(kwargs['params']['session_num']) + kwargs['params']['mic_name']
     vad_command = ["bash", vad_script, resample_dir, output_dir, intm_id]
-    
-    print("vad command")
-    print(subprocess.list2cmdline(vad_command))
-    print("intm_id")
-    print(intm_id)
-    print("resample_file_id")
-    print(resample_file_id)
-    print("resample_dir")
-    print(resample_dir)
-    print("output_dir")
-    print(output_dir)
+
     subprocess.check_call(vad_command, env=my_env, cwd=vad_dir)
 
     return {

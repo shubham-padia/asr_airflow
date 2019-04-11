@@ -116,7 +116,6 @@ for metadata_id, file_path, created_at in metadata_record_list:
             step_tasks = {} 
             for step in steps:
                 step_info = steps[step]
-                print(step_info)
                 step_task = get_task_by_type(
                         step_info['task_type'],
                         step_info['inputs'],
@@ -130,8 +129,6 @@ for metadata_id, file_path, created_at in metadata_record_list:
                 parent_ids = step_info.get('parent_id', None)
                 if parent_ids:
                     for parent_id in parent_ids:
-                        print(parent_id)
-                        print(step_tasks)
                         step_task.set_upstream(step_tasks[parent_id])
 
             globals()[dag2_id] = dag2

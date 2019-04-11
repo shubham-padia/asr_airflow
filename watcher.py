@@ -49,11 +49,7 @@ class Handler(FileSystemEventHandler):
         file_path = event.src_path
         file_name = os.path.splitext(os.path.basename(file_path))[0]
 
-        # metadata = parse_metadata(file_path)
-        # conf_dict = {'metadata': metadata}
         conf_string = '{"metadata": %s}' % get_metadata_str(file_path) # json.dumps(conf_dict)
-        # print("conf_string type: " + str(type(conf_string)))
-        # print("file_name type: " + str(type(file_name)))
 
         my_env = os.environ.copy()
         my_env["AIRFLOW_HOME"] = "/home/shubham/github/asr_airflow"
