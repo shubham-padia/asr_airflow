@@ -29,13 +29,19 @@ def decoder_task(**kwargs):
     ti = kwargs['ti']
     seg_data = ti.xcom_pull(task_ids=seg_task_id)
     wav_data = ti.xcom_pull(task_ids=wav_task_id)
-    
+
     output_prefix = "session%s-seg-%s-%s-wav-%s-%s" % (params['session_num'],
             seg_mic_name, seg_speaker_id, wav_mic_name, wav_speaker_id)
-    output_dir = "%s/%s/session%d/hybrid/decoder" % (os.getcwd(),
-            params['parent_output_dir'], params['session_num']) 
+
+    if seg_mic_name == wav_mic_name:
+        output_dir = "%s/%s/session%d/%s/decoder" % (os.getcwd(),
+                params['parent_output_dir'], params['session_num'], seg_mic_name)
+    else:
+        output_dir = "%s/%s/session%d/hybrid/decoder" % (os.getcwd(),
+                params['parent_output_dir'], params['session_num'])
+
     create_dir_if_not_exists(output_dir)
-    
+
     # The decode bash script requires the segment file name and the wav
     # file name to be the same. We are using symlinks to make them have the
     # same file name. They also need to be in the same directory.
@@ -43,7 +49,7 @@ def decoder_task(**kwargs):
             params['session_num'], seg_mic_name, seg_speaker_id)
     wav_file = "%s/%s-session%s-%s-%s.wav" % (wav_data['output_dir'],
             wav_data['file_id'], params['session_num'], wav_mic_name,
-            wav_speaker_id)]
+            wav_speaker_id)
 
     symlink_dir = "%s/input-symlinks" % (output_dir)
     symlink_prefix = "%s/%s" % (symlink_dir, output_prefix)
@@ -58,13 +64,13 @@ def decoder_task(**kwargs):
 
     if not os.path.exists(symlink_seg_file):
         change_segment_id(seg_file, symlink_seg_file)
-    
+
     decoder_dir = '/home/shubham/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts'
     decoder_script = 'decoding_stdl.sh'
-    
-    my_env=os.environ.copy()
+
+    my_env= os.environ.copy()
     my_env["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    
+
     decoder_command = ['bash', decoder_script,
             '../systems', symlink_seg_file, symlink_wav_file, output_dir,
             output_prefix]
@@ -75,10 +81,11 @@ def get_decoder_task(session_num, hybrid, parent_output_dir, dag):
     seg_hybrid = hybrid['seg']
     wav_hybrid = hybrid['wav']
 
-    t_decoder = PythonOperator(task_id='hybrid_seg_%s_%s_wav_%s_%s' % 
-            (seg_hybrid['mic_name'], seg_hybrid['speaker_id'], wav_hybrid['mic_name'], wav_hybrid['speaker_id']),
-            dag=dag,
-            params={
+    t_decoder= PythonOperator(task_id='hybrid_seg_%s_%s_wav_%s_%s' %
+            (seg_hybrid['mic_name'], seg_hybrid['speaker_id'],
+             wav_hybrid['mic_name'], wav_hybrid['speaker_id']),
+            dag = dag,
+            params = {
                 "session_num": session_num,
                 "parent_output_dir": parent_output_dir,
                 "seg": {
@@ -88,8 +95,8 @@ def get_decoder_task(session_num, hybrid, parent_output_dir, dag):
                     "hybrid": wav_hybrid
                 }
             },
-            python_callable=decoder_task,
-            provide_context=True
+            python_callable = decoder_task,
+            provide_context = True
         )
 
     return t_decoder

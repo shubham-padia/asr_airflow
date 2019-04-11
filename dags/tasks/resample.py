@@ -21,7 +21,7 @@ def resample_task(**kwargs):
     channels = file_metadata['channels']
     file_dir = '%s/%s/session%d/%s' % (os.getcwd(), params['parent_output_dir'],
             session_num,
-            file_metadata['type'])
+            mic_name)
     output_dir = file_dir + '/0_raw'
     create_dir_if_not_exists(output_dir)
     
