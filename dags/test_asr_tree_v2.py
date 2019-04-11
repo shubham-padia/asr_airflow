@@ -101,7 +101,7 @@ for metadata_id, file_path, created_at in metadata_record_list:
     if version == '0.0.2':
         metadata = pipeline_info['metadata']
         file_id = os.path.splitext(os.path.basename(file_path))[0]
-        parent_output_dir = "output/%s/%s" % (parent_id, pipeline_id)
+        parent_output_dir = "output/%s/%s" % (parent_dir, pipeline_id)
         
         for session_num in pipeline_info['steps']:
             session_num = int(session_num)
