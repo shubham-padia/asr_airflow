@@ -34,7 +34,7 @@ def decoder_task(**kwargs):
             seg_mic_name, seg_speaker_id, wav_mic_name, wav_speaker_id)
 
     if seg_mic_name == wav_mic_name:
-        output_dir = "%s/%s/session%d/%s/decoder" % (os.getcwd(),
+        output_dir = "%s/%s/session%d/%s/2_decoder" % (os.getcwd(),
                 params['parent_output_dir'], params['session_num'], seg_mic_name)
     else:
         output_dir = "%s/%s/session%d/hybrid/decoder" % (os.getcwd(),
