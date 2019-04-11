@@ -2,6 +2,11 @@ from __future__ import with_statement
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
+
+import sys
+from os.path import abspath, dirname
+sys.path.insert(0, dirname(dirname(abspath(__file__)))) 
+
 from models.base import Base
 from models.metadata_registry import MetadataRegistry
 from envparse import env
