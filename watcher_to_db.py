@@ -65,7 +65,7 @@ class Handler(FileSystemEventHandler):
         print(file_extension)
         if file_extension == '.json':
             session = Session()
-            metadata_entry = MetadataRegistry(file_path, False, pipeline_info.get('version', '0.0.1'))
+            metadata_entry = MetadataRegistry(file_path, pipeline_info.get('version', '0.0.1'), False)
             session.add(metadata_entry)
             session.commit()
             session.close()
