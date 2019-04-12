@@ -30,7 +30,7 @@ def decoder_task(**kwargs):
     seg_data = ti.xcom_pull(task_ids=seg_task_id)
     wav_data = ti.xcom_pull(task_ids=wav_task_id)
 
-    output_prefix = "session%s-seg-%s-%s-wav-%s-%s" % (params['session_num'],
+    output_prefix = "%s-session%s-seg-%s-%s-wav-%s-%s" % (params['file_id'], params['session_num'],
             seg_mic_name, seg_speaker_id, wav_mic_name, wav_speaker_id)
 
     if seg_mic_name == wav_mic_name:
@@ -77,7 +77,7 @@ def decoder_task(**kwargs):
     subprocess.check_call(decoder_command, env=my_env, cwd=decoder_dir)
 
 
-def get_decoder_task(session_num, hybrid, parent_output_dir, dag):
+def get_decoder_task(session_num, hybrid, parent_output_dir, file_id, dag):
     seg_hybrid = hybrid['seg']
     wav_hybrid = hybrid['wav']
 
@@ -93,7 +93,8 @@ def get_decoder_task(session_num, hybrid, parent_output_dir, dag):
                 },
                 "wav": {
                     "hybrid": wav_hybrid
-                }
+                },
+                "file_id": file_id
             },
             python_callable = decoder_task,
             provide_context = True

@@ -72,7 +72,7 @@ def get_task_by_type(task_type, inputs, session_num, session_metadata, parent_ou
         mic_name = inputs['mic_name']
         return get_vad_task(session_num, mic_name, file_id, dag)
     elif task_type == DECODER:
-        return get_decoder_task(session_num, inputs, parent_output_dir, dag)
+        return get_decoder_task(session_num, inputs, parent_output_dir, file_id, dag)
     elif task_type == DUMMY:
         return get_dummy_task(session_num, dag)
     elif task_type == DIA:
@@ -100,7 +100,7 @@ for metadata_id, file_path, created_at in metadata_record_list:
 
     if version == '0.0.2':
         metadata = pipeline_info['metadata']
-        file_id = os.path.splitext(os.path.basename(file_path))[0]
+        file_id = "%s-%s" % (parent_dir, pipeline_id)
         parent_output_dir = "output/%s/%s" % (parent_dir, pipeline_id)
         
         for session_num in pipeline_info['steps']:
