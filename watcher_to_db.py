@@ -6,6 +6,8 @@ import os
 import json
 from models.base import Session
 from models.metadata_registry import MetadataRegistry
+import uuid
+import shutil
 
 def parse_metadata(metadata_file_path):
     with open(metadata_file_path, "r") as stream:
@@ -55,15 +57,23 @@ def parse_json(metadata_file_path):
     
     return metadata
 
+def move_file(file_path):
+    file_name = os.path.splitext(os.path.basename(file_path))[0]
+    new_file_path = "%s/metadata/%s-%s.json" % (os.getcwd(), file_name,
+            str(uuid.uuid4()))
+    shutil.move(file_path, new_file_path)
+    return new_file_path
+
 class Handler(FileSystemEventHandler):
     @staticmethod
     def on_created(event):
         print(event)
         file_path = event.src_path
         pipeline_info = parse_json(file_path)
-        file_extension = os.path.splitext(file_path)[1]
+        file_extension = os.path.splitext(os.path.basename(file_path))[1]
         print(file_extension)
         if file_extension == '.json':
+            file_path = move_file(file_path)
             session = Session()
             metadata_entry = MetadataRegistry(file_path, pipeline_info.get('version', '0.0.1'), False)
             session.add(metadata_entry)
