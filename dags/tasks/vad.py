@@ -10,7 +10,6 @@ def vad_task(**kwargs):
     parent_data = ti.xcom_pull(task_ids='resample_%s' % kwargs['params']['mic_name'])
     
     resample_dir = parent_data['output_dir']
-    resample_file_id = parent_data['file_id']
     output_dir = parent_data['file_dir'] + '/1_clean_vad'
     create_dir_if_not_exists(output_dir)
     
@@ -31,13 +30,12 @@ def vad_task(**kwargs):
         'file_id': parent_data['file_id']
     }
 
-def get_vad_task(session_num, mic_name, file_id, dag):
+def get_vad_task(session_num, mic_name, dag):
     t_vad = PythonOperator(task_id='vad_%s' %
         mic_name,
         params={
             "session_num": session_num,
-            "mic_name": mic_name,
-            "file_id": file_id
+            "mic_name": mic_name
         },
         dag=dag,
         python_callable=vad_task,
