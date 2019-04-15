@@ -61,13 +61,13 @@ def get_dummy_task(session_num, dag):
     return DummyOperator(task_id='dummy_%s' % session_num, dag=dag)
 
 def get_task_by_type(task_type, inputs, session_num, session_metadata, parent_output_dir,
-        file_id, dag):
+        file_id, parent_dir, dag):
 
     if task_type == RESAMPLE:
         mic_name = inputs['mic_name']
         mic_metadata = session_metadata[mic_name]
         return get_resample_task(mic_name, mic_metadata, session_num, dag,
-                parent_output_dir, file_id)
+                parent_output_dir, file_id, parent_dir)
     elif task_type == VAD:
         mic_name = inputs['mic_name']
         return get_vad_task(session_num, mic_name, dag)
@@ -126,6 +126,7 @@ for metadata_id, file_path, created_at in metadata_record_list:
                         session_metadata,
                         parent_output_dir,
                         file_id,
+                        parent_dir,
                         dag2)
                 step_tasks[int(step)] = step_task
                 
