@@ -17,7 +17,7 @@ def resample_task(**kwargs):
     session_num = params['session_num']
     file_id = params['file_id']
 
-    input_file_name = file_metadata['filename']
+    input_file_name = 'data/' + params['parent_dir'] + '/' + file_metadata['filename']
     channels = file_metadata['channels']
     file_dir = '%s/%s/session%d/%s' % (os.getcwd(), params['parent_output_dir'],
             session_num,
@@ -37,7 +37,7 @@ def resample_task(**kwargs):
     }
 
 def get_resample_task(mic_name, mic_metadata, session_num, dag,
-        parent_output_dir, file_id):
+        parent_output_dir, file_id, parent_dir):
 
     return PythonOperator(
         task_id='resample_%s' % mic_name, 
@@ -47,7 +47,8 @@ def get_resample_task(mic_name, mic_metadata, session_num, dag,
             "mic_name": mic_name,
             "metadata": mic_metadata,
             "parent_output_dir": parent_output_dir,
-            "file_id": file_id
+            "file_id": file_id,
+            "parent_dir": parent_dir
         },
         dag=dag,
         provide_context=True)
