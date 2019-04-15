@@ -16,3 +16,12 @@ PATH=export_path_here
 # Airflow watcher connection details. Only change this if your DB does not use the default credentials 
 WATCHER_LOGIN=watcher
 WATCHER_PASSWORD=watcher
+
+SGE_DECODER_DIR=/home/shubham/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
+SGE_DECODER_SCRIPT=decoding_stdl.sh
+
+CS_DECODER_DIR=/home/shubham/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
+CS_DECODER_SCRIPT=decoding_stdl.sh
+
+ML_DECODER_DIR=/home/shubham/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
+ML_DECODER_SCRIPT=decoding_stdl.sh

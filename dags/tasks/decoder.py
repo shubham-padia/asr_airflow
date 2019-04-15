@@ -3,7 +3,21 @@ import subprocess
 
 from airflow.operators.python_operator import PythonOperator
 from tasks.helpers import create_dir_if_not_exists, change_segment_id
+from envparse import env
 
+def get_decoder_location(lang):
+    env.read_envfile()
+    if lang == 'sge':
+        decoder_dir = env('SGE_DECODER_DIR')
+        decoder_script = env('SGE_DECODER_SCRIPT')
+    elif lang == 'cs':
+        decoder_dir = env('CS_DECODER_DIR')
+        decoder_script = env('CS_DECODER_SCRIPT')
+    elif lang == 'ml':
+        decoder_dir = env('ML_DECODER_DIR')
+        decoder_script = env('ML_DECODER_SCRIPT')
+
+    return decoder_dir, decoder_script
 
 def decoder_task(**kwargs):
     params = kwargs['params']
@@ -50,7 +64,7 @@ def decoder_task(**kwargs):
     wav_file = "%s/%s-session%s-%s-%s.wav" % (wav_data['output_dir'],
             wav_data['file_id'], params['session_num'], wav_mic_name,
             wav_speaker_id)
-
+    
     symlink_dir = "%s/input-symlinks" % (output_dir)
     symlink_prefix = "%s/%s" % (symlink_dir, output_prefix)
     symlink_wav_file = "%s.wav" % symlink_prefix
@@ -65,8 +79,7 @@ def decoder_task(**kwargs):
     if not os.path.exists(symlink_seg_file):
         change_segment_id(seg_file, symlink_seg_file)
 
-    decoder_dir = '/home/shubham/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts'
-    decoder_script = 'decoding_stdl.sh'
+    decoder_dir, decoder_script = get_decoder_location(params['lang'])
 
     my_env= os.environ.copy()
     my_env["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -77,9 +90,10 @@ def decoder_task(**kwargs):
     subprocess.check_call(decoder_command, env=my_env, cwd=decoder_dir)
 
 
-def get_decoder_task(session_num, hybrid, parent_output_dir, file_id, dag):
+def get_decoder_task(session_num, session_metadata, hybrid, parent_output_dir, file_id, dag):
     seg_hybrid = hybrid['seg']
     wav_hybrid = hybrid['wav']
+    lang = session_metadata[wav_hybrid['mic_name']]['lang']
 
     t_decoder= PythonOperator(task_id='hybrid_seg_%s_%s_wav_%s_%s' %
             (seg_hybrid['mic_name'], seg_hybrid['speaker_id'],
@@ -94,7 +108,8 @@ def get_decoder_task(session_num, hybrid, parent_output_dir, file_id, dag):
                 "wav": {
                     "hybrid": wav_hybrid
                 },
-                "file_id": file_id
+                "file_id": file_id,
+                "lang": lang
             },
             python_callable = decoder_task,
             provide_context = True

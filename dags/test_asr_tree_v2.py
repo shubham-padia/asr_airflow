@@ -72,7 +72,7 @@ def get_task_by_type(task_type, inputs, session_num, session_metadata, parent_ou
         mic_name = inputs['mic_name']
         return get_vad_task(session_num, mic_name, dag)
     elif task_type == DECODER:
-        return get_decoder_task(session_num, inputs, parent_output_dir, file_id, dag)
+        return get_decoder_task(session_num, session_metadata, inputs, parent_output_dir, file_id, dag)
     elif task_type == DUMMY:
         return get_dummy_task(session_num, dag)
     elif task_type == DIA:
