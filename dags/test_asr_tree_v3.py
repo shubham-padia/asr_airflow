@@ -98,7 +98,7 @@ for metadata_id, file_path, created_at in metadata_record_list:
     parent_dir = pipeline_info.get('parent_dir', 'no_parent_dir')
     pipeline_id = pipeline_info.get('pipeline_id')
 
-    if version == '0.0.2':
+    if version == '0.0.3':
         metadata = pipeline_info['metadata']
         file_id = "%s-%s" % (parent_dir, pipeline_id)
         parent_output_dir = "output/%s/%s" % (parent_dir, pipeline_id)
