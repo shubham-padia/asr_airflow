@@ -19,7 +19,7 @@ VAD = 'vad'
 DECODER = 'decoder'
 DUMMY = 'dummy'
 DIA = 'diarization'
-CURRENT_VERSION = '0.0.2'
+CURRENT_VERSION = '0.0.3'
 
 default_args = {
         'owner': 'me',
@@ -98,7 +98,7 @@ for metadata_id, file_path, created_at in metadata_record_list:
     parent_dir = pipeline_info.get('parent_dir', 'no_parent_dir')
     pipeline_id = pipeline_info.get('pipeline_id')
 
-    if version == '0.0.3':
+    if version == CURRENT_VERSION:
         metadata = pipeline_info['metadata']
         file_id = "%s-%s" % (parent_dir, pipeline_id)
         parent_output_dir = "output/%s/%s" % (parent_dir, pipeline_id)
@@ -112,7 +112,8 @@ for metadata_id, file_path, created_at in metadata_record_list:
                     default_args=default_args,
                     schedule_interval='@once')
 
-            t_move_input_task = get_move_input_task(dag2, parent_output_dir, session_metadata)
+            t_move_input_task = get_move_input_task(dag2, parent_output_dir,
+                    session_metadata, parent_dir)
 
             steps = pipeline_info['steps'][str(session_num)]
             

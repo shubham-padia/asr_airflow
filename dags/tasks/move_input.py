@@ -8,6 +8,7 @@ def move_input_task(**kwargs):
     params = kwargs['params']
     session_metadata = params['session_metadata']
     parent_output_dir = params['parent_output_dir']
+    parent_dir = params['parent_dir']
 
     current_dir = os.getcwd()
     target_dir = "%s/moved_input/%s" % (current_dir, parent_output_dir)
@@ -19,18 +20,19 @@ def move_input_task(**kwargs):
         file_path = session_metadata[mic_name]['filename']
         file_name = os.path.basename(file_path)
 #           print(file_name)
-        src = current_dir + '/' + file_path
+        src = "%s/data/%s/%s" % (current_dir, parent_dir, file_path)
         dst = target_dir + '/' + file_name
         copyfile(src, dst)
 
-def get_move_input_task(dag, parent_output_dir, session_metadata):
+def get_move_input_task(dag, parent_output_dir, session_metadata, parent_dir):
     return PythonOperator(
                 task_id='move_input',
                 dag=dag,
                 python_callable=move_input_task,
                 params={
                     "parent_output_dir": parent_output_dir,
-                    "session_metadata": session_metadata
+                    "session_metadata": session_metadata,
+                    "parent_dir": parent_dir
                 },
                 provide_context=True
             )
