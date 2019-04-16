@@ -19,7 +19,7 @@ VAD = 'vad'
 DECODER = 'decoder'
 DUMMY = 'dummy'
 DIA = 'diarization'
-CURRENT_VERSION = '0.0.3'
+CURRENT_VERSION = '0.0.4'
 
 default_args = {
         'owner': 'me',
