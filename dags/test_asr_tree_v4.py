@@ -106,7 +106,7 @@ for metadata_id, file_path, created_at in metadata_record_list:
         for session_num in pipeline_info['steps']:
             session_num = int(session_num)
             session_metadata = metadata['session'][session_num - 1]
-            dag2_id = 'atree_%s_session_%d' % (file_id, session_num) 
+            dag2_id = '%s_session_%d' % (file_id, session_num) 
             dag2 = DAG(
                     dag2_id,
                     default_args=default_args,
