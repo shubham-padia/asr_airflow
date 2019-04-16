@@ -61,13 +61,13 @@ def get_dummy_task(session_num, dag):
     return DummyOperator(task_id='dummy_%s' % session_num, dag=dag)
 
 def get_task_by_type(task_type, inputs, session_num, session_metadata, parent_output_dir,
-        file_id, parent_dir, dag):
+        file_id, recording_id, dag):
 
     if task_type == RESAMPLE:
         mic_name = inputs['mic_name']
         mic_metadata = session_metadata[mic_name]
         return get_resample_task(mic_name, mic_metadata, session_num, dag,
-                parent_output_dir, file_id, parent_dir)
+                parent_output_dir, file_id, recording_id)
     elif task_type == VAD:
         mic_name = inputs['mic_name']
         return get_vad_task(session_num, mic_name, dag)
@@ -95,13 +95,13 @@ for metadata_id, file_path, created_at in metadata_record_list:
     #created_at_str = created_at.strftime("%Y_%m_%d_%I_%M_%S")
     pipeline_info = parse_json(file_path)
     version = pipeline_info.get('version', None)
-    parent_dir = pipeline_info.get('parent_dir', 'no_parent_dir')
+    recording_id = pipeline_info.get('recording_id', 'no_recording_id')
     pipeline_id = pipeline_info.get('pipeline_id')
 
     if version == CURRENT_VERSION:
         metadata = pipeline_info['metadata']
-        file_id = "%s-%s" % (parent_dir, pipeline_id)
-        parent_output_dir = "output/%s/%s" % (parent_dir, pipeline_id)
+        file_id = "%s-%s" % (recording_id, pipeline_id)
+        parent_output_dir = "output/%s/%s" % (recording_id, pipeline_id)
         
         for session_num in pipeline_info['steps']:
             session_num = int(session_num)
@@ -113,7 +113,7 @@ for metadata_id, file_path, created_at in metadata_record_list:
                     schedule_interval='@once')
 
             # t_move_input_task = get_move_input_task(dag2, parent_output_dir,
-            #         session_metadata, parent_dir)
+            #         session_metadata, recording_id)
 
             steps = pipeline_info['steps'][str(session_num)]
             
@@ -127,7 +127,7 @@ for metadata_id, file_path, created_at in metadata_record_list:
                         session_metadata,
                         parent_output_dir,
                         file_id,
-                        parent_dir,
+                        recording_id,
                         dag2)
                 step_tasks[int(step)] = step_task
                 
