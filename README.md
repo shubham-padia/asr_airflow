@@ -119,3 +119,21 @@ systemctl start airflow-scheduler
 - Go to Admin > Variables
 - Import variables by choosing the file `airflow_default_variables.json`
 - Change the variables to point to the path of scripts on your system.
+
+##### Glossary:
+- **Recording_id**: Usually the name of your Recording Info file i.e. the file that contains the information about the sessions, mic types and channels
+- **Pipeline_id**: The name for the different combination of steps you are running for the same recording id. 
+- **BASE_FOLDER**: The folder where asr_airflow has been installed.
+- **Pipeline Creator**: The frontend for generating pipeline files.
+
+##### Output file Structure:
+
+- `BASE_FOLDER/<Recording_id>/<Pipeline_id>/<session(1/2/3...)>/<mic_name or "hybrid">/<0_raw or 1_vad or 1_dia or 2_decoder>/<Your_output_files>`
+
+# Steps
+1. Upload your audio files to `BASE_FOLDER/data/<Recording_id>`
+2. Open the Pipeline Creator and upload you recording metadata files. Fill the name (which will be the name of the file you downlaod when you click the submit button), recording_id, version, and pipeline_id. **The combination of `Recording_id` + `Pipeline_id` should always be unique.** The name of the pipeline will be `<Recording_id>-<Pipeline_id>`.
+3. Add steps for your pipeline in the steps section, check the graph for your steps by clicking `view graph` on the navbar. If you are satisfied with the graph, then click on the submit button and the file will be downloaded at <name>.json.
+4. NOTE: To use the downloaded file for another recording metadata file, you can use the import function at the top of the navbar. The imported pipeline will the contain the old recording data. You can replace that by uploading the new metadata file. Please remember to first import the pipeline and then import the metadata file. 
+5. Upload the downloaded metadata file to `BASE_FOLDER/metadata` directory. The file watcher in that directory will log the file in the database. The pipeline will then be registered to airflow after a wait of 1-2 mins.
+6. Search for `<Recording_id>-<Pipeline_id>` in airflow and turn the toggle button in airflow for whichever session you want to run for the uploaded pipeline. Check the status of the pipeline to see whether the pipeline has been successfully executed.
