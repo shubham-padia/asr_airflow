@@ -112,8 +112,8 @@ for metadata_id, file_path, created_at in metadata_record_list:
                     default_args=default_args,
                     schedule_interval='@once')
 
-            t_move_input_task = get_move_input_task(dag2, parent_output_dir,
-                    session_metadata, parent_dir)
+            # t_move_input_task = get_move_input_task(dag2, parent_output_dir,
+            #         session_metadata, parent_dir)
 
             steps = pipeline_info['steps'][str(session_num)]
             
