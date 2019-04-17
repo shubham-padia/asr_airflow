@@ -44,15 +44,16 @@ def decoder_task(**kwargs):
     seg_data = ti.xcom_pull(task_ids=seg_task_id)
     wav_data = ti.xcom_pull(task_ids=wav_task_id)
 
-    output_prefix = "%s-session%s-seg-%s-%s-wav-%s-%s" % (params['file_id'], params['session_num'],
-            seg_mic_name, seg_speaker_id, wav_mic_name, wav_speaker_id)
-
     if seg_mic_name == wav_mic_name:
         output_dir = "%s/%s/session%d/%s/2_decoder" % (os.getcwd(),
                 params['parent_output_dir'], params['session_num'], seg_mic_name)
+        output_prefix = "%s-session%s-%s-spk-%s" % (params['file_id'], params['session_num'],
+            wav_mic_name, wav_speaker_id)
     else:
         output_dir = "%s/%s/session%d/hybrid/decoder" % (os.getcwd(),
                 params['parent_output_dir'], params['session_num'])
+        output_prefix = "%s-session%s-seg-%s-wav-%s-spk-%s" % (params['file_id'], params['session_num'],
+            seg_mic_name, wav_mic_name, wav_speaker_id)
 
     create_dir_if_not_exists(output_dir)
 
