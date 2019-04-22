@@ -8,8 +8,8 @@ class MetadataRegistry(models.Model):
     class Meta:
         db_table = 'metadata_registry'
     
-    recording_id = models.CharField(max_length=256, default='')
-    pipeline_id = models.CharField(max_length=256, default='')
+    recording_id = models.CharField(max_length=256)
+    pipeline_id = models.CharField(max_length=256)
     status = models.BooleanField(default=False)
     version = models.CharField(max_length=256)
     # Make sure you aren't using default=datetime.datetime.utcnow(); you want
