@@ -1,3 +1,8 @@
 from django.contrib import admin
+from .models import MetadataRegistry
 
-# Register your models here.
+class MetadataRegistryAdmin(admin.ModelAdmin):
+    list_display = ['version', 'created_at', 'status']
+    list_filter = ('version', 'created_at', 'status') 
+
+admin.site.register(MetadataRegistry, MetadataRegistryAdmin)

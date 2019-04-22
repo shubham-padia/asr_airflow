@@ -8,14 +8,12 @@ class MetadataRegistry(models.Model):
     class Meta:
         db_table = 'metadata_registry'
     
-    pipeline = JSONField()
     status = models.BooleanField(default=False)
     version = models.CharField(max_length=256)
-
     # Make sure you aren't using default=datetime.datetime.utcnow(); you want
     # to pass the utcnow function, not the result of evaluating it at module
     # load.
     created_at = models.DateTimeField(default=datetime.datetime.utcnow)
 
-    def __str__(self):
-        return "Pipeline: {}, Version - {}".format(self.pipeline, self.version)
+    pipeline = JSONField()
+
