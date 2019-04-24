@@ -5,11 +5,12 @@ from .models import MetadataRegistry
 class MetadataRegistrySerializer(serializers.ModelSerializer):
     class Meta:
         model = MetadataRegistry
-        fields = ("pipeline", "status", "version", "created_at")
+        fields = ("recording_id", "pipeline_id", "pipeline", "status", "version", "created_at")
         read_only_fields = ('created_at',)
         extra_kwargs = {
+            "recording_id": {"required": True},
+            "pipeline_id": {"required": True},
             "pipeline": {"required": True},
-            "status": {"required": True},
             "version": {"required": True},
             "created_at": {"required": True}
         }
