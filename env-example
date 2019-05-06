@@ -25,3 +25,5 @@ CS_DECODER_SCRIPT=decoding_stdl.sh
 
 ML_DECODER_DIR=/home/shubham/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
 ML_DECODER_SCRIPT=decoding_stdl.sh
+
+MEDIA_ROOT = /home/shubham/github/asr_airflow/data/
