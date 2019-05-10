@@ -25,7 +25,7 @@ SECRET_KEY = '5y-zj9rz7*x^qv90a3!l+9$#0@ej3lw)u*%@2slk=6#aq_@wz='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['155.69.146.209']
 
 
 # Application definition
@@ -129,7 +129,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:3000'
+    'localhost:3000',
+    '155.69.146.209:4000',
+    '155.69.146.205:4000'
 )
 
 from envparse import env

@@ -37,7 +37,7 @@ def process_records():
     select_sql = "SELECT id, recording_id, pipeline_id, pipeline, created_at from metadata_registry where created_at > \
     '{}' AND NOT status and version = '{}'".format(date_threshold, CURRENT_VERSION)
 
-    pg_hook = PostgresHook(postgres_conn_id='watcher')
+    pg_hook = PostgresHook(postgres_conn_id='WATCHER')
     connection = pg_hook.get_conn()
 
     print("Checking for records in the last %d days" % days_threshold)
