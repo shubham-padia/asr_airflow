@@ -78,9 +78,10 @@ cp env-example .env
 - Change `PATH` to your current system path, make sure the virtual environment that we created earlier is active. You can view your current path by typing `echo $PATH`
 - Set `WATCHER_DB_URL` to the url of the watcher database we created in the earlier steps.
 
-8.) Create the tables.
+8.) Create the tables and run migration.
 ```
-python -m models.create_db
+cd app
+python manage.py migrate
 ```
 
 9.) Copy the example services from `example_services` to a directory named `services`.
