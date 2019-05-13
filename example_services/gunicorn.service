@@ -1,0 +1,13 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=shubham
+Group=shubham
+WorkingDirectory=CURRENT_DIR/app
+ExecStart=/home/shubham/.pyenv/versions/asr_airflow/bin/gunicorn --access-logfile - --workers 4 --bind unix:/run/gunicorn.sock app.wsgi
+
+[Install]
+WantedBy=multi-user.target

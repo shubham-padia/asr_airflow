@@ -11,7 +11,7 @@ AIRFLOW__WEBSERVER__WEB_SERVER_PORT=7000
 AIRFLOW__WEBSERVER__WEB_SERVER_HOST=155.69.146.205
 WATCHER_DB_URL="postgresql://watcher:yeshallnotpass@localhost:5432/watcher"
 AIRFLOW_CONN_WATCHER="postgresql://watcher:yeshallnotpass@localhost:5432/watcher"
-PATH=$HOME_DIR/.pyenv/shims:$HOME_DIR/.pyenv/bin:$HOME_DIR/.pyenv/plugins/pyenv-virtualenv/shims:$HOME_DIR/.pyenv/shims:$HOME_DIR/.pyenv/bin:$HOME_DIR/.pyenv/bin:$HOME_DIR/.pyenv/versions/3.7.3/bin:$HOME_DIR/.pyenv/versions/3.7.3/envs/asr_airflow/bin:/usr/local/bin:/bin:/usr/bin:$HOME_DIR/github/asr_airflow
+PATH=/home/padia/.pyenv/bin:/home/padia/.pyenv/bin:/home/padia/.pyenv/versions/3.7.3/bin:/home/padia/.pyenv/versions/3.7.3/envs/asr_airflow/bin:/usr/local/bin:/bin:/usr/bin:/home/padia/github/asr_airflow
 
 SGE_DECODER_DIR=$HOME_DIR/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
 SGE_DECODER_SCRIPT=decoding_stdl.sh
@@ -22,3 +22,4 @@ CS_DECODER_SCRIPT=decoding_stdl.sh
 ML_DECODER_DIR=$HOME_DIR/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
 ML_DECODER_SCRIPT=decoding_stdl.sh
 
+SERVER_IP=server_domain_or_IP

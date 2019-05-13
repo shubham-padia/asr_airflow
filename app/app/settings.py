@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
+from envparse import env
+env.read_envfile()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,8 +28,7 @@ SECRET_KEY = '5y-zj9rz7*x^qv90a3!l+9$#0@ej3lw)u*%@2slk=6#aq_@wz='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['155.69.146.209']
-
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', env('SERVER_IP')]
 
 # Application definition
 
@@ -41,15 +43,24 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-]
-
-MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.staticfiles',from envparse import env
+env.read_envfile()
+]from envparse import env
+env.read_envfile()
+from envparse import env
+env.read_envfile()
+MIDDLEWARE = [from envparse import env
+env.read_envfile()
+    'corsheaders.middleware.CorsMifrom envparse import env
+env.read_envfile()ddleware',
+    'django.middleware.security.Sefrom envparse import env
+env.read_envfile()curityMiddleware',
+    'django.contrib.sessions.middlfrom envparse import env
+env.read_envfile()eware.SessionMiddleware',
+    'django.middleware.common.Commfrom envparse import env
+env.read_envfile()onMiddleware',
+    'django.contrib.auth.middlewarfrom envparse import env
+env.read_envfile()e.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -75,9 +86,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'app.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
+from envparse import env
+env.read_envfile()
+from envparse import env
+env.read_envfile()n/2.2/ref/settings/#databases
+from envparse import env
+env.read_envfile()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -133,8 +147,5 @@ CORS_ORIGIN_WHITELIST = (
     '155.69.146.209:4000',
     '155.69.146.205:4000'
 )
-
-from envparse import env
-env.read_envfile()
 
 MEDIA_ROOT = env('MEDIA_ROOT', default='/home/shubham/github/asr_airflow/data/')
