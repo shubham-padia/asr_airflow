@@ -43,24 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',from envparse import env
-env.read_envfile()
-]from envparse import env
-env.read_envfile()
-from envparse import env
-env.read_envfile()
-MIDDLEWARE = [from envparse import env
-env.read_envfile()
-    'corsheaders.middleware.CorsMifrom envparse import env
-env.read_envfile()ddleware',
-    'django.middleware.security.Sefrom envparse import env
-env.read_envfile()curityMiddleware',
-    'django.contrib.sessions.middlfrom envparse import env
-env.read_envfile()eware.SessionMiddleware',
-    'django.middleware.common.Commfrom envparse import env
-env.read_envfile()onMiddleware',
-    'django.contrib.auth.middlewarfrom envparse import env
-env.read_envfile()e.AuthenticationMiddleware',
+    'django.contrib.staticfiles']
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -85,13 +75,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
-
-from envparse import env
-env.read_envfile()
-from envparse import env
-env.read_envfile()n/2.2/ref/settings/#databases
-from envparse import env
-env.read_envfile()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

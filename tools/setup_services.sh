@@ -10,3 +10,4 @@ sudo systemctl daemon-reload
 sudo systemctl enable gunicorn
 sudo systemctl enable airflow-webserver
 sudo systemctl enable airflow-scheduler
+sudo systemctl enable gunicorn.socket
