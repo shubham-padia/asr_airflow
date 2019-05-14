@@ -1,6 +1,15 @@
 # Dynamic Airflow Pipeline Generator
 
-### Installation:
+## Installation:
+1.)
+```
+git clone https://github.com/shubham-padia/asr_airflow
+cd asr_airflow
+```
+2.) run `bash install.sh`
+3.) To deploy i.e run your project, execute `bash tools/deploy.sh`
+
+### Manual Installation:
 0.) Clone the repo:
 ```
 git clone https://github.com/shubham-padia/asr_airflow

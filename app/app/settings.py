@@ -127,8 +127,8 @@ STATIC_URL = '/static/'
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
-    '155.69.146.209:4000',
-    '155.69.146.205:4000'
+    'localhost:4000',
+    env('SERVER_IP') + ':4000'
 )
 
 MEDIA_ROOT = env('MEDIA_ROOT', default='/home/shubham/github/asr_airflow/data/')
