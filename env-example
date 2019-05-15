@@ -23,3 +23,7 @@ ML_DECODER_DIR=$HOME_DIR/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
 ML_DECODER_SCRIPT=decoding_stdl.sh
 
 SERVER_IP=server_domain_or_IP
+
+LIUM_PATH=$HOME_DIR/backend_asr/diarization/LIUM_SpkDiarization-8.4.1.jar
+VAD_DIR=$HOME_DIR/backend_asr/vad8_dnn
+VAD_SCRIPT=vad_DNN_v4_test2.sh

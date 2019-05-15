@@ -5,6 +5,7 @@ from tasks.helpers import create_dir_if_not_exists
 from airflow.operators.python_operator import PythonOperator
 from airflow.models import Variable
 
+from envparse import env
 
 def dia_task(**kwargs):
     ti = kwargs['ti']
@@ -24,7 +25,8 @@ def dia_task(**kwargs):
     output_file = output_dir + '/' + resample_name + '.seg'
     create_dir_if_not_exists(output_dir)
 
-    lium_path = Variable.get('lium_path')
+    env.read_envfile()
+    lium_path = env('LIUM_PATH')
 
     dia_command = ['java', '-Xmx2048m', '-jar', lium_path, '--fInputMask=' +
                    resample_file, '--sOutputMask=' + output_file, '--doCEClustering', resample_name]

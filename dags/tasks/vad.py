@@ -4,6 +4,7 @@ import subprocess
 from tasks.helpers import create_dir_if_not_exists
 from airflow.operators.python_operator import PythonOperator
 from airflow.models import Variable
+from envparse import env
 
 def vad_task(**kwargs):
     ti = kwargs['ti']
@@ -13,8 +14,9 @@ def vad_task(**kwargs):
     output_dir = parent_data['file_dir'] + '/1_clean_vad'
     create_dir_if_not_exists(output_dir)
     
-    vad_dir = Variable.get("vad_dir")
-    vad_script = Variable.get("vad_script")
+    env.read_envfile()
+    vad_dir = env("VAD_DIR")
+    vad_script = env("VAD_SCRIPT")
     
     my_env=os.environ.copy()
     my_env["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
