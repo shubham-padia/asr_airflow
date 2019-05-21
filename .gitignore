@@ -151,3 +151,5 @@ derby.log
 metastore_db
 data
 nginx-config
+
+static

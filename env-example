@@ -1,4 +1,4 @@
-USERNAME=padia
+USERNAME=shubham
 HOME_DIR=/home/$USERNAME
 AIRFLOW_HOME=$HOME_DIR/github/asr_airflow
 AIRFLOW_CONFIG=$AIRFLOW_HOME/airflow.cfg
@@ -6,24 +6,27 @@ AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql+psycopg2://127.0.0.1:5432/asr_airflo
 AIRFLOW_CONN_AIRFLOW_DB="postgresql://airflow@127.0.0.1:5432/airflow"
 LOGS_PARENT_DIR=$AIRFLOW_HOME/logs
 AIRFLOW__CORE__BASE_LOG_FOLDER=$LOGS_PARENT_DIR/pipelines
-AIRFLOW__WEBSERVER__BASE_URL=http://server_domain_or_IP
+AIRFLOW__WEBSERVER__BASE_URL=http://server_domain_or_IP:7000
 AIRFLOW__WEBSERVER__WEB_SERVER_PORT=7000
 AIRFLOW__WEBSERVER__WEB_SERVER_HOST=server_domain_or_IP
 WATCHER_DB_URL="postgresql://watcher:yeshallnotpass@localhost:5432/watcher"
 AIRFLOW_CONN_WATCHER="postgresql://watcher:yeshallnotpass@localhost:5432/watcher"
-PATH=/home/padia/.pyenv/bin:/home/padia/.pyenv/bin:/home/padia/.pyenv/versions/3.7.2/bin:/home/padia/.pyenv/versions/3.7.2/envs/asr_airflow/bin:/usr/local/bin:/bin:/usr/bin:/home/padia/github/asr_airflow:/sbin
+PATH=/home/shubham/.pyenv/bin:/home/shubham/.pyenv/bin:/home/shubham/.pyenv/versions/3.7.2/bin:/home/shubham/.pyenv/versions/3.7.2/envs/asr_airflow/bin:/usr/local/bin:/bin:/usr/bin:/home/shubham/github/asr_airflow:/sbin
 
-SGE_DECODER_DIR=$HOME_DIR/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
+SGE_DECODER_DIR=/home/shubham/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
 SGE_DECODER_SCRIPT=decoding_stdl.sh
 
-CS_DECODER_DIR=$HOME_DIR/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
+CS_DECODER_DIR=/home/shubham/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
 CS_DECODER_SCRIPT=decoding_stdl.sh
 
-ML_DECODER_DIR=$HOME_DIR/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
+ML_DECODER_DIR=/home/shubham/backend_asr/lvscr_ntu/lvcsr-170923-v2/scripts
 ML_DECODER_SCRIPT=decoding_stdl.sh
 
 SERVER_IP=server_domain_or_IP
 
-LIUM_PATH=$HOME_DIR/backend_asr/diarization/LIUM_SpkDiarization-8.4.1.jar
-VAD_DIR=$HOME_DIR/backend_asr/vad8_dnn
+LIUM_PATH=/home/shubham/backend_asr/diarization/LIUM_SpkDiarization-8.4.1.jar
+VAD_DIR=/home/shubham/backend_asr/vad8_dnn
 VAD_SCRIPT=vad_DNN_v4_test2.sh
+
+MEDIA_ROOT=$AIRFLOW_HOME/data/
+STATIC_ROOT=$AIRFLOW_HOME/app/static/
