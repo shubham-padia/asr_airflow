@@ -37,9 +37,8 @@ class UploadAudio(FormView):
         if form.is_valid():
             data = form.cleaned_data
             recording_id = data['recording_id']
-            pipeline_id = data['pipeline_id']
             for f in files:
-                directory = "%s/%s/%s" % (settings.MEDIA_ROOT, recording_id, pipeline_id)
+                directory = "%s/%s" % (settings.MEDIA_ROOT, recording_id)
                 create_dir_if_not_exists(directory)
                 with open(Path("%s/%s" % (directory, f.name)).resolve(), 'wb+') as destination:
                     for chunk in f.chunks():
