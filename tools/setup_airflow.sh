@@ -1,3 +1,4 @@
+cp airflow-example-config.cfg airflow.cfg
 sed -i -e "s@CURRENT_DIR@$(pwd)@g" airflow.cfg
 
 eval "$(pyenv init -)"
