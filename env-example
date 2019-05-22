@@ -28,5 +28,5 @@ LIUM_PATH=/home/shubham/backend_asr/diarization/LIUM_SpkDiarization-8.4.1.jar
 VAD_DIR=/home/shubham/backend_asr/vad8_dnn
 VAD_SCRIPT=vad_DNN_v4_test2.sh
 
-MEDIA_ROOT=$AIRFLOW_HOME/data/
+MEDIA_ROOT=CURRENT_DIR/data/
 STATIC_ROOT=CURRENT_DIR/app/static/
