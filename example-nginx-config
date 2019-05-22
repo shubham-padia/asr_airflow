@@ -6,4 +6,8 @@ server {
         include proxy_params;
         proxy_pass http://unix:/run/gunicorn.sock;
     }
+
+    location /static {
+        alias CURRENT_DIR/app/static;
+    }
 }

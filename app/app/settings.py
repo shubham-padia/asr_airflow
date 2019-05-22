@@ -133,3 +133,4 @@ CORS_ORIGIN_WHITELIST = (
 
 MEDIA_ROOT = env('MEDIA_ROOT', default='/home/shubham/github/asr_airflow/data/')
 STATIC_ROOT = env('STATIC_ROOT', default='/home/shubham/github/asr_airflow/app/static/')
+STATIC_URL = '/static/'
