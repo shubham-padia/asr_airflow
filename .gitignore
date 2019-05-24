@@ -153,3 +153,5 @@ data
 nginx-config
 
 static
+
+airflow.cfg
