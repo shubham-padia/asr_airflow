@@ -6,7 +6,7 @@ After=network.target
 User=shubham
 Group=shubham
 WorkingDirectory=CURRENT_DIR/app
-ExecStart=/home/shubham/.pyenv/versions/asr_airflow/bin/gunicorn --access-logfile - --workers 4 --timeout 120 --bind server_domain_or_IP:8000 app.wsgi
+ExecStart=/home/shubham/.pyenv/versions/asr_airflow/bin/gunicorn --access-logfile - --workers 4 --timeout 5400 --bind server_domain_or_IP:8000 app.wsgi
 
 [Install]
 WantedBy=multi-user.target
