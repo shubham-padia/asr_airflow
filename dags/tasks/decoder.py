@@ -4,6 +4,7 @@ import subprocess
 from airflow.operators.python_operator import PythonOperator
 from tasks.helpers import create_dir_if_not_exists, change_segment_id
 from envparse import env
+from tasks.convert_stm_to_srt import convert_stm_to_srt
 
 
 def get_decoder_location(lang):
@@ -91,6 +92,10 @@ def decoder_task(**kwargs):
                        '../systems', symlink_seg_file, symlink_wav_file, output_dir,
                        output_prefix]
     subprocess.check_call(decoder_command, env=my_env, cwd=decoder_dir)
+
+    stm_path =  "%s/%s.stm" % (output_dir, output_prefix)
+    srt_path =  "%s/%s.srt" % (output_dir, output_prefix)
+    convert_stm_to_srt(stm_path, srt_path)
 
 
 def get_decoder_task(session_num, session_metadata, hybrid, parent_output_dir, file_id, dag):

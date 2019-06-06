@@ -1,14 +1,19 @@
 import os
 import subprocess
 from tasks.helpers import create_dir_if_not_exists
+from tasks.audio_to_video import convert_audio_to_video
 from airflow.operators.python_operator import PythonOperator
 
 def resample(channels, input_file_name, output_prefix):
+    wav_list = []
     for idx, channel in enumerate(channels):
         output_file_name = output_prefix + '-' + str(idx + 1) + '.wav'
+        wav_list.append(output_file_name)
         resample_command = ["sox", input_file_name, "-r16k", "-b16",
         output_file_name, "remix", str(channel)]
         subprocess.run(resample_command)
+
+    return wav_list
 
 def resample_task(**kwargs):
     params = kwargs['params']
@@ -27,7 +32,13 @@ def resample_task(**kwargs):
     
     output_prefix = '%s/%s-session%d-%s' % (output_dir, file_id, session_num,
             mic_name)
-    resample(channels, input_file_name, output_prefix)
+
+    video_file_name_prefix = "%s-session%d-%s" % (file_id, session_num,
+            mic_name)
+    video_dir = file_dir + '/3_video'
+    create_dir_if_not_exists(video_dir)
+    wav_list = resample(channels, input_file_name, output_prefix)
+    convert_audio_to_video(wav_list, video_file_name_prefix, video_dir)
 
     return {
             'task_type': resample,
