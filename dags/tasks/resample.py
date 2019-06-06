@@ -33,11 +33,13 @@ def resample_task(**kwargs):
     output_prefix = '%s/%s-session%d-%s' % (output_dir, file_id, session_num,
             mic_name)
 
+    
+    wav_list = resample(channels, input_file_name, output_prefix)
+    
     video_file_name_prefix = "%s-session%d-%s" % (file_id, session_num,
             mic_name)
     video_dir = file_dir + '/3_video'
     create_dir_if_not_exists(video_dir)
-    wav_list = resample(channels, input_file_name, output_prefix)
     convert_audio_to_video(wav_list, video_file_name_prefix, video_dir)
 
     return {

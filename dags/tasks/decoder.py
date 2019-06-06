@@ -96,9 +96,10 @@ def decoder_task(**kwargs):
     stm_path =  "%s/%s.stm" % (output_dir, output_prefix)
     srt_path =  "%s/%s.srt" % (output_dir, output_prefix)
     convert_stm_to_srt(stm_path, srt_path)
+    
+    ti.xcom_push(key='decoder_srt_%s' % params['step_id'], value=srt_path)
 
-
-def get_decoder_task(session_num, session_metadata, hybrid, parent_output_dir, file_id, dag):
+def get_decoder_task(step_id, session_num, session_metadata, hybrid, parent_output_dir, file_id, dag):
     seg_hybrid = hybrid['seg']
     wav_hybrid = hybrid['wav']
     lang = session_metadata[wav_hybrid['mic_name']]['lang']
@@ -112,6 +113,7 @@ def get_decoder_task(session_num, session_metadata, hybrid, parent_output_dir, f
     t_decoder = PythonOperator(task_id=task_id,
                                dag=dag,
                                params={
+                                   "step_id": step_id,
                                    "session_num": session_num,
                                    "parent_output_dir": parent_output_dir,
                                    "seg": {

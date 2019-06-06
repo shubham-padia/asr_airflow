@@ -13,12 +13,14 @@ from tasks.vad import get_vad_task
 from tasks.decoder import get_decoder_task
 from tasks.move_input import get_move_input_task
 from tasks.dia import get_dia_task
+from tasks.decoder_post_processing import get_decoder_post_processing_task
 
 RESAMPLE = 'resample'
 VAD = 'vad'
 DECODER = 'decoder'
 DUMMY = 'dummy'
 DIA = 'diarization'
+DECODER_POST_PROCESSING = 'decoder_post_processing'
 CURRENT_VERSION = '0.0.4'
 
 default_args = {
@@ -60,7 +62,7 @@ def get_task_by_id(task_id, dag):
 def get_dummy_task(session_num, dag):
     return DummyOperator(task_id='dummy_%s' % session_num, dag=dag)
 
-def get_task_by_type(task_type, inputs, session_num, session_metadata, parent_output_dir,
+def get_task_by_type(step_id, task_type, inputs, parent_ids, session_num, session_metadata, parent_output_dir,
         file_id, recording_id, dag):
 
     if task_type == RESAMPLE:
@@ -72,14 +74,16 @@ def get_task_by_type(task_type, inputs, session_num, session_metadata, parent_ou
         mic_name = inputs['mic_name']
         return get_vad_task(session_num, mic_name, dag)
     elif task_type == DECODER:
-        return get_decoder_task(session_num, session_metadata, inputs, parent_output_dir, file_id, dag)
+        return get_decoder_task(step_id, session_num, session_metadata, inputs, parent_output_dir, file_id, dag)
     elif task_type == DUMMY:
         return get_dummy_task(session_num, dag)
     elif task_type == DIA:
         mic_name = inputs['mic_name']
         speaker_id = inputs['speaker_id']
         return get_dia_task(session_num, mic_name, file_id, speaker_id, dag)
-
+    elif task_type == DECODER_POST_PROCESSING:
+        return get_decoder_post_processing_task(session_num, parent_output_dir, file_id, parent_ids, dag)
+        
 dag1 = DAG('db_record_processing_v04',
           default_args=default_args,
           schedule_interval = '*/1 * * * *')
@@ -111,8 +115,10 @@ for metadata_id, recording_id, pipeline_id, pipeline_info, created_at in metadat
         for step in steps:
             step_info = steps[step]
             step_task = get_task_by_type(
+                    step,
                     step_info['task_type'],
                     step_info['inputs'],
+                    step_info.get('parent_id', None),
                     session_num,
                     session_metadata,
                     parent_output_dir,
