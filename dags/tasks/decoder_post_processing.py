@@ -10,17 +10,31 @@ def decoder_post_processing_task(**kwargs):
     
     ti = kwargs['ti']
     srt_list = []
-    for parent_id in parent_ids:
-        srt_list.append(ti.xcom_pull(key='decoder_srt_%s' % parent_id, task_ids=None))
+    mic_set = set()
+    is_hybrid = False
 
-    output_dir = "%s/%s/session%d/srt/" % (os.getcwd(), params['parent_output_dir'], params['session_num'])
-    create_dir_if_not_exists(output_dir)
-    output_srt_path = "%s/%s-session%s.srt" % (output_dir, params['file_id'], params['session_num'])
+    for parent_id in parent_ids:
+        msg = ti.xcom_pull(key='decoder_srt_%s' % parent_id, task_ids=None)
+        srt_list.append(msg['srt_path'])
+        mic_set.add(msg['wav_mic_name'])
+        mic_set.add(msg['seg_mic_name'])
+        if msg['is_hybrid']:
+            is_hybrid = True
+
+    if not is_hybrid and len(mic_set) == 1:
+        mic_name = mic_set.pop()
+        output_dir = "%s/%s/session%d/%s/3_video" % (os.getcwd(), params['parent_output_dir'], params['session_num'], mic_name)
+        create_dir_if_not_exists(output_dir)
+        output_srt_path = "%s/%s-session%d-%s.srt" % (output_dir, params['file_id'], params['session_num'], mic_name)
+    else:
+        output_dir = "%s/%s/session%d/hybrid/video" % (os.getcwd(), params['parent_output_dir'], params['session_num'])
+        create_dir_if_not_exists(output_dir)
+        output_srt_path = "%s/%s-session%d-parents-%s.srt" % (output_dir, params['file_id'], params['session_num'], "_".join(str(x) for x in parent_ids))
 
     combine_transcripts(srt_list, output_srt_path)
 
 def get_decoder_post_processing_task(session_num, parent_output_dir, file_id, parent_ids, dag):
-    task_id = "decoder_post_processing_%s" % session_num
+    task_id = "decoder_post_processing_%d_parents_%s" % (session_num, "_".join(str(x) for x in parent_ids))
 
     t_decoder_post_processing = PythonOperator(task_id=task_id,
                                dag=dag,

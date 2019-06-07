@@ -47,12 +47,15 @@ def decoder_task(**kwargs):
     seg_data = ti.xcom_pull(task_ids=seg_task_id)
     wav_data = ti.xcom_pull(task_ids=wav_task_id)
 
+    is_hybrid = False
+
     if seg_mic_name == wav_mic_name:
         output_dir = "%s/%s/session%d/%s/2_decoder" % (os.getcwd(),
                                                        params['parent_output_dir'], params['session_num'], seg_mic_name)
         output_prefix = "%s-session%s-%s-spk-%s" % (params['file_id'], params['session_num'],
                                                     wav_mic_name, wav_speaker_id)
     else:
+        is_hybrid = True
         output_dir = "%s/%s/session%d/hybrid/decoder" % (os.getcwd(),
                                                          params['parent_output_dir'], params['session_num'])
         output_prefix = "%s-session%s-seg-%s-wav-%s-spk-%s" % (params['file_id'], params['session_num'],
@@ -96,8 +99,14 @@ def decoder_task(**kwargs):
     stm_path =  "%s/%s.stm" % (output_dir, output_prefix)
     srt_path =  "%s/%s.srt" % (output_dir, output_prefix)
     convert_stm_to_srt(stm_path, srt_path)
+    push_value = {
+        "srt_path": srt_path,
+        "is_hybrid": is_hybrid,
+        "wav_mic_name": wav_mic_name,
+        "seg_mic_name": seg_mic_name
+    }
     
-    ti.xcom_push(key='decoder_srt_%s' % params['step_id'], value=srt_path)
+    ti.xcom_push(key='decoder_srt_%s' % params['step_id'], value=push_value)
 
 def get_decoder_task(step_id, session_num, session_metadata, hybrid, parent_output_dir, file_id, dag):
     seg_hybrid = hybrid['seg']
