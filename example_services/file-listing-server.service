@@ -1,0 +1,12 @@
+[Unit]
+Description=Job that runs the python SimpleHTTPServer daemon
+Documentation=man:SimpleHTTPServer(1)
+
+[Service]
+Type=simple
+WorkingDirectory=CURRENT_DIR/output
+ExecStart=/home/shubham/.pyenv/versions/3.7.2/envs/asr_airflow/bin/python -m http.server 2000
+ExecStop=/bin/kill `/bin/ps aux | /bin/grep http.server | /bin/grep -v grep | /usr/bin/awk '{ print $2 }'`
+
+[Install]
+WantedBy=multi-user.target
