@@ -1,3 +1,4 @@
+mkdir services
 cp example_services/* services
 sed -i -e "s/shubham/$USER/g" services/airflow-webserver.service
 sed -i -e "s@CURRENT_DIR@$(pwd)@g" services/airflow-webserver.service
