@@ -18,6 +18,20 @@ If you want to change that IP to either 127.0.0.1 or some other IP please follow
 
 Please note that you also have to change the IP for the frontend, please have a look at the README of the [frontend repo](https://github.com/shubham-padia/pipeline_creator) for the same.
 
+## Adding a task:
+
+Let's assume we are adding another version fo vad task called `vad2`
+
+1.) Create a new file named `vad2.py` in `dags/tasks` directory.
+2.) Add a function called `vad2_task` which will do all of the operations that your task needs to do.
+3.) Add another function called `get_vad2_task` which returns the `PythonOperator` to the pipeline generator file. You can access the params passed in the pythonoperator in the `vad2_task`.
+4.) Now open the pipeline generator file which will be under the `dags` directory (`dags/test_asr_tree_v5.py` at the time of writing).
+5.) Add `VAD2='vad2'` at the top opf the file along with the other tasks.
+6.) Add an `elif` condition checking for your task in the `get_task_by_type` which will call the `get_vad2_task` method from the file that we just added. Pass the parameters of your choice to `get_vad2_task`
+
+lease note that you also have to add the task to the frontend, please have a look at the README of the [frontend repo](https://github.com/shubham-padia/pipeline_creator) for the same.
+
+
 ### Manual Installation:
 0.) Clone the repo:
 ```
