@@ -10,6 +10,12 @@ cd asr_airflow
 
 3.) To deploy i.e run your project, execute `bash tools/deploy.sh`
 
+## Changing the IP:
+By default the installation script will pickup your network IP (which you can find by ifconfig) and use that.
+If you want to change that IP to either 127.0.0.1 or some other IP please follow the below given instructions.
+
+1.) Run `bash tools/change_ip.sh <your_ip_here >`
+
 ### Manual Installation:
 0.) Clone the repo:
 ```
