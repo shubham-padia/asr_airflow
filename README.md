@@ -16,6 +16,8 @@ If you want to change that IP to either 127.0.0.1 or some other IP please follow
 
 1.) Run `bash tools/change_ip.sh <your_ip_here >`
 
+Please note that you also have to change the IP for the frontend, please have a look at the README of the [frontend repo](https://github.com/shubham-padia/pipeline_creator) for the same.
+
 ### Manual Installation:
 0.) Clone the repo:
 ```
