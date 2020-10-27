@@ -1,7 +1,7 @@
 apache-airflow[postgres]==1.10.3
 psycopg2-binary==2.7.7
 watchdog==0.9.0
-cryptography==2.5
+cryptography==3.2
 envparse==0.2.0
 tenacity==5.0.3
 django==2.2
